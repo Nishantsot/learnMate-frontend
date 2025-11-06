@@ -1,0 +1,46 @@
+.custom-navbar {
+  background: linear-gradient(90deg, #007bff, #00bcd4);
+  transition: all 0.3s ease;
+}
+
+.text-accent {
+  color: #ffe082;
+}
+
+.nav-link {
+  position: relative;
+  font-weight: 500;
+  margin: 0 8px;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ffe082 !important;
+}
+
+/* Button Hover */
+.btn-light:hover {
+  background-color: #f0f0f0;
+  color: #0d6efd !important;
+  transform: scale(1.05);
+  transition: 0.2s ease-in-out;
+}
+
+.btn-outline-light:hover {
+  background-color: #fff;
+  color: #007bff !important;
+  transform: scale(1.05);
+}
+
+/* Mobile Navbar */
+@media (max-width: 991px) {
+  .navbar-nav {
+    text-align: center;
+    padding-top: 10px;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+}

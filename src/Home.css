@@ -1,0 +1,53 @@
+.home-section {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #1a1a40, #3f51b5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.content-box {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.display-2 {
+  font-size: 4rem;
+  letter-spacing: 2px;
+}
+
+.slogan-text {
+  font-size: 1.7rem;
+  color: #fff;
+  margin-top: 10px;
+  font-weight: 400;
+}
+
+/* Typing cursor animation */
+.cursor {
+  display: inline-block;
+  color: #fff;
+  font-weight: bold;
+  margin-left: 3px;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Responsive text scaling */
+@media (max-width: 768px) {
+  .display-2 {
+    font-size: 2.6rem;
+  }
+
+  .slogan-text {
+    font-size: 1.3rem;
+  }
+}

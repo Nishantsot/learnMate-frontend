@@ -1,0 +1,98 @@
+.contact-section {
+  width: 100vw; /* take full viewport width */
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a40, #3f51b5);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 80px; /* top padding for navbar */
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.contact-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #ffcc70, #ff8177);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.contact-section p {
+  font-size: 1.1rem;
+  text-align: center;
+  max-width: 700px;
+  margin-bottom: 50px;
+}
+
+.contact-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+  max-width: 1300px;
+}
+
+.contact-card {
+  flex: 1 1 250px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.contact-card svg {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 15px;
+  color: #ffcc70;
+}
+
+.contact-card h4 {
+  margin-bottom: 10px;
+  color: #ffcc70;
+}
+
+.quick-links {
+  margin-top: 60px;
+  text-align: center;
+}
+
+.quick-links a {
+  color: #ffcc70;
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.quick-links a:hover {
+  text-decoration: underline;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+  .contact-section h2 {
+    font-size: 2rem;
+  }
+
+  .contact-section p {
+    font-size: 1rem;
+  }
+
+  .contact-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-card {
+    width: 90%;
+  }
+}

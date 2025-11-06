@@ -1,0 +1,68 @@
+.about-section {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a40, #3f51b5);
+  padding: 120px 0 80px; /* Added top padding to fix navbar overlap */
+  overflow: hidden;
+}
+
+.about-header h2 {
+  background: linear-gradient(90deg, #ffcc70, #ff8177);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-swiper {
+  width: 100%;
+  max-width: 1300px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.about-card {
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  transition: all 0.4s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.about-card img {
+  height: 230px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .about-card img {
+    height: 180px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .card-text {
+    font-size: 0.9rem;
+  }
+}
+
