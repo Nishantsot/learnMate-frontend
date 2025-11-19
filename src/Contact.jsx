@@ -1,12 +1,20 @@
-import React from "react";
-import { Mail, Phone, Github, MapPin } from "lucide-react";
+import React, { useEffect } from "react";
+import { Mail, Phone, Github } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Contact.css";
 
 export default function Contact() {
+  
+  // 🔥 Hide Navbar
+  useEffect(() => {
+    document.body.classList.add("no-navbar");
+    return () => document.body.classList.remove("no-navbar");
+  }, []);
+
   return (
     <section className="contact-section text-light">
       <div className="container-fluid px-4">
+        
         <h2 className="text-center fw-bold display-5 mb-4 contact-title">
           Contact <span>LearnMate</span>
         </h2>
@@ -15,9 +23,10 @@ export default function Contact() {
         </p>
 
         <div className="row justify-content-center g-4">
+          
           {/* Email */}
-          <div className="col-md-6 col-lg-3">
-            <div className="contact-card p-4 text-center shadow-lg">
+          <div className="col-md-6 col-lg-4">
+            <div className="contact-card p-4 text-center shadow-lg equal-card">
               <Mail className="contact-icon mb-3" size={40} />
               <h5>Email</h5>
               <p>support@learnmate.com</p>
@@ -25,8 +34,8 @@ export default function Contact() {
           </div>
 
           {/* Phone */}
-          <div className="col-md-6 col-lg-3">
-            <div className="contact-card p-4 text-center shadow-lg">
+          <div className="col-md-6 col-lg-4">
+            <div className="contact-card p-4 text-center shadow-lg equal-card">
               <Phone className="contact-icon mb-3" size={40} />
               <h5>Phone</h5>
               <p>+91 98765 43210</p>
@@ -34,8 +43,8 @@ export default function Contact() {
           </div>
 
           {/* GitHub */}
-          <div className="col-md-6 col-lg-3">
-            <div className="contact-card p-4 text-center shadow-lg">
+          <div className="col-md-6 col-lg-4">
+            <div className="contact-card p-4 text-center shadow-lg equal-card">
               <Github className="contact-icon mb-3" size={40} />
               <h5>GitHub</h5>
               <a
@@ -49,24 +58,6 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Location */}
-          <div className="col-md-6 col-lg-3">
-            <div className="contact-card p-4 text-center shadow-lg">
-              <MapPin className="contact-icon mb-3" size={40} />
-              <h5>Location</h5>
-              <p>New Delhi, India</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-center mt-5">
-          <h6>Quick Links</h6>
-          <div className="d-flex justify-content-center flex-wrap gap-3 mt-3">
-            <a href="/home" className="quick-link">Home</a>
-            <a href="/about" className="quick-link">About</a>
-            <a href="/features" className="quick-link">Features</a>
-            <a href="/contact" className="quick-link">Contact</a>
-          </div>
         </div>
       </div>
     </section>

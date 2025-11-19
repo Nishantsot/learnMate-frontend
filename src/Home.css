@@ -1,53 +1,123 @@
+/* Fullscreen Hero Section */
 .home-section {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #1a1a40, #3f51b5);
+  background: linear-gradient(135deg, #1a1a40, #3f51b5, #283593);
+  background-size: 200% 200%;
+  animation: gradientMove 10s ease infinite;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  position: relative;
 }
 
+/* Smooth Gradient Animation */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating Glow Particles */
+.home-section::before {
+  content: "";
+  position: absolute;
+  width: 1200px;
+  height: 1200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+  top: -300px;
+  left: -300px;
+  filter: blur(90px);
+  animation: floatGlow 8s infinite alternate;
+}
+
+@keyframes floatGlow {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 40px); }
+}
+
+/* Main Content */
 .content-box {
   width: 100%;
   max-width: 800px;
-  margin: 0 auto;
+  text-align: center;
+  z-index: 10;
+  animation: fadeUp 1.4s ease-out;
 }
 
+/* Smooth fade-up entrance */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Title */
 .display-2 {
   font-size: 4rem;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 25px rgba(0,0,0,0.4),
+               0 0 10px rgba(255,255,255,0.2);
 }
 
+/* Slogan Text */
 .slogan-text {
   font-size: 1.7rem;
-  color: #fff;
-  margin-top: 10px;
+  color: #e3e3ff;
+  margin-top: 12px;
   font-weight: 400;
+  letter-spacing: 0.5px;
+  animation: fadeIn 1.5s ease-out;
 }
 
-/* Typing cursor animation */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Typing Cursor Animation */
 .cursor {
   display: inline-block;
   color: #fff;
   font-weight: bold;
-  margin-left: 3px;
-  animation: blink 0.8s infinite;
+  margin-left: 4px;
+  animation: blink 0.7s infinite;
 }
 
 @keyframes blink {
-  50% {
-    opacity: 0;
-  }
+  50% { opacity: 0; }
 }
 
-/* Responsive text scaling */
+/* Button Styling Upgrade */
+.btn-light {
+  border-radius: 40px;
+  padding: 10px 40px;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+
+.btn-light:hover {
+  background: #fff;
+  color: #283593 !important;
+  transform: translateY(-3px);
+  box-shadow: 0 0 18px rgba(255,255,255,0.6);
+}
+
+/* Responsive Scaling */
 @media (max-width: 768px) {
   .display-2 {
     font-size: 2.6rem;
+    letter-spacing: 2px;
   }
 
   .slogan-text {
     font-size: 1.3rem;
+  }
+
+  .content-box {
+    padding: 0 20px;
   }
 }

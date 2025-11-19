@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   loginUser,
   forgotPassword,
@@ -9,7 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Login.css";
 
 const Login = () => {
-  const [step, setStep] = useState("login"); // login | forgot | reset
+  const [step, setStep] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,68 +18,63 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ LOGIN HANDLER
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage("");
+  // 🔥 Hide Navbar on Login Page
+  useEffect(() => {
+    document.body.classList.add("no-navbar");
+    return () => {
+      document.body.classList.remove("no-navbar");
+    };
+  }, []);
 
-  try {
-    const res = await loginUser(email, password);
+  // LOGIN HANDLER
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
 
-    if (res.token) {
-      localStorage.setItem("token", res.token);
+    try {
+      const res = await loginUser(email, password);
 
-      // 🧩 Decode JWT payload
-      const payload = JSON.parse(atob(res.token.split(".")[1]));
-      let userRole = payload.role || "";
+      if (res.token) {
+        localStorage.setItem("token", res.token);
 
-      // 🧠 Normalize role (handles "ROLE_ADMIN" or "ADMIN")
-      userRole = userRole.replace("ROLE_", "").toUpperCase();
+        const payload = JSON.parse(atob(res.token.split(".")[1]));
+        let userRole = payload.role?.replace("ROLE_", "").toUpperCase();
 
-      console.log("✅ Logged in as:", userRole);
+        setMessage("Login successful!");
 
-      setMessage("✅ Login successful!");
-
-      setTimeout(() => {
-        if (userRole === "ADMIN") {
-          window.location.href = "/admin";
-        } else if (userRole === "TUTOR") {
-          window.location.href = "/tutor-dashboard";
-        } else {
-          window.location.href = "/student-dashboard";
-        }
-      }, 1000);
-    } else if (res.message) {
-      setMessage(`❌ ${res.message}`);
-    } else {
-      setMessage("❌ Login failed. Please check your email or password.");
+        setTimeout(() => {
+          if (userRole === "ADMIN") window.location.href = "/admin";
+          else if (userRole === "TUTOR") window.location.href = "/tutor-dashboard";
+          else window.location.href = "/student-dashboard";
+        }, 1000);
+      } else {
+        setMessage(res.message || "Login failed!");
+      }
+    } catch (err) {
+      setMessage("Login failed! Check your credentials.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Login error:", err);
-    setMessage("❌ Login failed. Please check your email or password.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-  // ✅ FORGOT PASSWORD
+  // FORGOT PASSWORD
   const handleForgot = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
     try {
       const res = await forgotPassword(email);
-      setMessage(res.message || "OTP sent to your email.");
+      setMessage(res.message);
       setStep("reset");
     } catch (err) {
-      setMessage(err.message || "Error sending OTP");
+      setMessage("Error sending OTP");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ RESET PASSWORD
+  // RESET PASSWORD
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -88,24 +83,23 @@ const handleLogin = async (e) => {
       const res = await resetPassword(email, otp, newPassword);
       setMessage(res.message);
       if (res.message.toLowerCase().includes("successful")) {
-        setTimeout(() => setStep("login"), 2000);
+        setTimeout(() => setStep("login"), 1500);
       }
     } catch (err) {
-      setMessage(err.message || "Password reset failed!");
+      setMessage("Password reset failed!");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ RESEND OTP
   const handleResendOtp = async () => {
     setLoading(true);
     setMessage("");
     try {
       const res = await resendOtp(email);
-      setMessage(res.message || "OTP resent successfully!");
+      setMessage(res.message);
     } catch (err) {
-      setMessage(err.message || "Failed to resend OTP!");
+      setMessage("OTP resend failed!");
     } finally {
       setLoading(false);
     }
@@ -116,7 +110,7 @@ const handleLogin = async (e) => {
       case "forgot":
         return (
           <>
-            <h2 className="text-gradient text-center mb-4">Forgot Password</h2>
+            <h2 className="text-gradient text-center mb-3">Forgot Password</h2>
             <form onSubmit={handleForgot}>
               <div className="mb-3">
                 <label className="form-label text-light fw-semibold">Email</label>
@@ -129,13 +123,11 @@ const handleLogin = async (e) => {
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="btn btn-light w-100 fw-bold text-primary"
-                disabled={loading}
-              >
-                {loading ? "Sending OTP..." : "Send OTP"}
+
+              <button type="submit" className="btn btn-light w-100 fw-bold text-primary">
+                {loading ? "Sending..." : "Send OTP"}
               </button>
+
               <p className="text-center mt-3 text-light">
                 Remembered?{" "}
                 <span
@@ -152,7 +144,7 @@ const handleLogin = async (e) => {
       case "reset":
         return (
           <>
-            <h2 className="text-gradient text-center mb-4">Reset Password</h2>
+            <h2 className="text-gradient text-center mb-3">Reset Password</h2>
             <form onSubmit={handleResetPassword}>
               <div className="mb-3">
                 <label className="form-label text-light fw-semibold">Email</label>
@@ -179,9 +171,7 @@ const handleLogin = async (e) => {
               </div>
 
               <div className="mb-3 position-relative">
-                <label className="form-label text-light fw-semibold">
-                  New Password
-                </label>
+                <label className="form-label text-light fw-semibold">New Password</label>
                 <input
                   type={showPassword ? "text" : "password"}
                   className="form-control"
@@ -199,19 +189,14 @@ const handleLogin = async (e) => {
                 </span>
               </div>
 
-              <button
-                type="submit"
-                className="btn btn-light w-100 fw-bold text-primary"
-                disabled={loading}
-              >
+              <button type="submit" className="btn btn-light w-100 fw-bold text-primary">
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
 
               <button
                 type="button"
-                className="btn btn-outline-light w-100 mt-2 fw-semibold"
                 onClick={handleResendOtp}
-                disabled={loading}
+                className="btn btn-outline-light w-100 mt-2 fw-semibold"
               >
                 Resend OTP
               </button>
@@ -232,7 +217,7 @@ const handleLogin = async (e) => {
       default:
         return (
           <>
-            <h2 className="text-gradient text-center mb-4">Welcome Back 👋</h2>
+            <h2 className="text-gradient text-center mb-3">Welcome Back 👋</h2>
             <form onSubmit={handleLogin}>
               <div className="mb-3">
                 <label className="form-label text-light fw-semibold">Email</label>
@@ -247,9 +232,7 @@ const handleLogin = async (e) => {
               </div>
 
               <div className="mb-3 position-relative">
-                <label className="form-label text-light fw-semibold">
-                  Password
-                </label>
+                <label className="form-label text-light fw-semibold">Password</label>
                 <input
                   type={showPassword ? "text" : "password"}
                   className="form-control"
@@ -276,17 +259,13 @@ const handleLogin = async (e) => {
                 </span>
               </div>
 
-              <button
-                type="submit"
-                className="btn btn-light w-100 fw-bold text-primary"
-                disabled={loading}
-              >
-                {loading ? "Logging in..." : "Login"}
+              <button type="submit" className="btn btn-light w-100 fw-bold text-primary">
+                {loading ? "Logging..." : "Login"}
               </button>
             </form>
 
             <p className="text-center mt-4 text-light">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <a href="/register" className="text-warning fw-semibold">
                 Register here
               </a>
@@ -311,6 +290,7 @@ const handleLogin = async (e) => {
               {message}
             </div>
           )}
+
           {renderForm()}
         </div>
       </div>

@@ -96,3 +96,9 @@
     width: 90%;
   }
 }
+.equal-card {
+  height: 230px;        /* 👈 Same height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

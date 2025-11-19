@@ -18,6 +18,17 @@ const Register = () => {
   const [timer, setTimer] = useState(60);
   const [resendDisabled, setResendDisabled] = useState(true);
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  // 🔥 Hide Navbar on Register page
+  useEffect(() => {
+    document.body.classList.add("no-navbar");
+
+    return () => {
+      document.body.classList.remove("no-navbar");
+    };
+  }, []);
+
   // ⏳ Timer
   useEffect(() => {
     if (step === "verify" && timer > 0) {
@@ -50,13 +61,11 @@ const Register = () => {
       const msg = res.message || "Registration successful! Please verify OTP.";
       setMessage(msg);
 
-      // handle existing verified user
       if (/already registered and verified/i.test(msg)) {
         setTimeout(() => (window.location.href = "/login"), 1500);
         return;
       }
 
-      // new or unverified user
       setStep("verify");
       setTimer(60);
       setResendDisabled(true);
@@ -110,9 +119,7 @@ const Register = () => {
       <div className="container d-flex justify-content-center align-items-center min-vh-100">
         <div className="register-card shadow-lg p-4 rounded-4">
           <h2 className="text-center mb-4 fw-bold text-gradient">
-            {step === "register"
-              ? "Create Your LearnMate Account"
-              : "Verify Your Email"}
+            {step === "register" ? "Create Your LearnMate Account" : "Verify Your Email"}
           </h2>
 
           {message && (
@@ -170,12 +177,14 @@ const Register = () => {
                 />
               </div>
 
-              <div className="mb-3">
+              {/* 👁️ Password Field with Show/Hide */}
+              <div className="mb-3 position-relative">
                 <label className="form-label text-light fw-semibold">
                   Password
                 </label>
+
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   className="form-control"
                   placeholder="Enter your password"
@@ -183,6 +192,21 @@ const Register = () => {
                   onChange={handleChange}
                   required
                 />
+
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="password-toggle-icon"
+                  style={{
+                    position: "absolute",
+                    right: "15px",
+                    top: "40px",
+                    cursor: "pointer",
+                    fontSize: "20px",
+                    color: "#fff",
+                  }}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </span>
               </div>
 
               {/* Role Dropdown */}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -7,6 +7,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./About.css";
 
 export default function About() {
+
+  // 🔥 Hide Navbar on About Page
+  useEffect(() => {
+    document.body.classList.add("no-navbar");
+    return () => {
+      document.body.classList.remove("no-navbar");
+    };
+  }, []);
+
   const aboutCards = [
     {
       title: "What is LearnMate?",
@@ -23,7 +32,6 @@ export default function About() {
       text: "Get detailed analytics on your learning progress, stay motivated, and achieve milestones faster with AI-driven recommendations.",
       img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80",
     },
-    
   ];
 
   return (

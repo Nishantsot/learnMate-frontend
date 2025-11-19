@@ -42,24 +42,30 @@ const Home = () => {
   }, [currentSlogan]);
 
   return (
-    <section
-      id="home"
-      className="home-section d-flex align-items-center justify-content-center text-center text-light"
-    >
-      <div className="container-fluid">
-        <div className="content-box">
-          <h1 className="display-2 fw-bold mb-3">LearnMate</h1>
-          <h4 className="slogan-text">
-            <span className="typing">{displayText}</span>
-            <span className="cursor">|</span>
-          </h4>
+    <section id="home" className="home-section text-light">
+      <div className="floating-bg"></div>
 
-          <div className="mt-4">
-            <a href="/register" className="btn btn-lg btn-light text-primary px-5 py-2 fw-semibold shadow-sm">
-              Get Started
-            </a>
-          </div>
-        </div>
+      {/* Floating particles */}
+      <div className="particles">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <span key={i} style={{ "--i": i }}></span>
+        ))}
+      </div>
+
+      <div className="content-box text-center">
+        <h1 className="hero-title">LearnMate</h1>
+
+        <h4 className="slogan-text">
+          <span className="typing">{displayText}</span>
+          <span className="cursor">|</span>
+        </h4>
+
+        <a
+          href="/register"
+          className="btn btn-lg btn-start shadow-lg fw-semibold"
+        >
+          Get Started
+        </a>
       </div>
     </section>
   );
