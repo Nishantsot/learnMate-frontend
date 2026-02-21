@@ -24,14 +24,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    // ✅ Check if token exists
     if (!token) {
       navigate("/login");
       return;
     }
 
     try {
-      // ✅ Decode JWT payload
       const payload = JSON.parse(atob(token.split(".")[1]));
       const role = payload.role;
 
@@ -41,7 +39,6 @@ const AdminDashboard = () => {
         return;
       }
 
-      // ✅ Load admin data if valid
       loadData(token);
     } catch (err) {
       console.error("Invalid token:", err);
@@ -62,7 +59,7 @@ const AdminDashboard = () => {
 
       const [statsRes, tutorRes] = await Promise.all([
         axiosInstance.get("/admin/dashboard"),
-        axiosInstance.get("/admin/pending-tutors"),
+        axiosInstance.get("/admin/tutors/pending"),
       ]);
 
       setStats(statsRes.data);
@@ -73,29 +70,45 @@ const AdminDashboard = () => {
     }
   };
 
-  const approveTutor = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:8080/admin/approve-tutor/${id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      loadData(token);
-    } catch (error) {
-      console.error("Approve failed", error);
-    }
-  };
+  // 🔹 Approve Tutor
+const approveTutor = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
 
-  const rejectTutor = async (id) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8080/admin/reject-tutor/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      loadData(token);
-    } catch (error) {
-      console.error("Reject failed", error);
-    }
-  };
+    await axios.put(
+      `http://localhost:8080/admin/course/approve/${id}`,   // ✅ FIXED URL
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    loadData(token); // refresh list
+  } catch (error) {
+    console.error("Approve failed", error);
+  }
+};
+
+const rejectTutor = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await axios.put(
+      `http://localhost:8080/admin/tutor/reject/${id}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    loadData(token);
+  } catch (error) {
+    console.error("Reject failed", error);
+  }
+};
+
+
+
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -103,14 +116,14 @@ const AdminDashboard = () => {
   };
 
   const chartData = {
-    labels: ["Users", "Tutors", "Students", "Courses", "Revenue"],
+    labels: ["Users", "Tutors", "Students", "Approved Courses", "Revenue"],
     datasets: [
       {
         label: "LearnMate Stats",
         data: [
           stats.totalUsers || 0,
-          stats.tutors || 0,
-          stats.students || 0,
+          stats.totalTutors || 0,
+          stats.totalStudents || 0,
           stats.approvedCourses || 0,
           stats.revenue || 0,
         ],
@@ -120,121 +133,140 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="d-flex flex-column flex-md-row min-vh-100 bg-light">
-      {/* Sidebar */}
-      <div
-        className="bg-primary text-white p-3 flex-shrink-0"
-        style={{ minWidth: "240px" }}
-      >
-        <h4 className="fw-bold text-center mb-4">LearnMate Admin</h4>
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <button
-              className={`btn w-100 text-start mb-2 ${
-                activeSection === "dashboard"
-                  ? "btn-light text-primary"
-                  : "btn-outline-light"
-              }`}
-              onClick={() => setActiveSection("dashboard")}
-            >
-              📊 Dashboard
-            </button>
-          </li>
-          <li className="nav-item">
-            <button
-              className={`btn w-100 text-start mb-2 ${
-                activeSection === "pending"
-                  ? "btn-light text-primary"
-                  : "btn-outline-light"
-              }`}
-              onClick={() => setActiveSection("pending")}
-            >
-              🧑‍🏫 Pending Tutors
-            </button>
-          </li>
-          <li className="nav-item mt-auto">
-            <button className="btn btn-danger w-100 mt-3" onClick={logout}>
-              🚪 Logout
-            </button>
-          </li>
-        </ul>
+  <div className="container-fluid p-0">
+    <div className="row g-0 min-vh-100">
+
+      {/* 🔹 Sidebar */}
+      <div className="col-12 col-md-3 col-lg-2 bg-dark text-white p-4">
+        <h4 className="fw-bold text-center mb-4 text-info">LearnMate Admin</h4>
+
+        <button
+          className={`btn w-100 mb-2 ${
+            activeSection === "dashboard"
+              ? "btn-info text-dark"
+              : "btn-outline-light"
+          }`}
+          onClick={() => setActiveSection("dashboard")}
+        >
+          📊 Dashboard
+        </button>
+
+        <button
+          className={`btn w-100 mb-2 ${
+            activeSection === "pending"
+              ? "btn-info text-dark"
+              : "btn-outline-light"
+          }`}
+          onClick={() => setActiveSection("pending")}
+        >
+          🧑‍🏫 Pending Tutors
+        </button>
+
+        <button
+          className="btn btn-danger w-100 mt-4"
+          onClick={logout}
+        >
+          🚪 Logout
+        </button>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-grow-1 p-4">
-        {message && <div className="alert alert-info">{message}</div>}
+      {/* 🔹 Main Content */}
+      <div className="col-12 col-md-9 col-lg-10 bg-light p-4">
 
+        {message && (
+          <div className="alert alert-warning shadow-sm">
+            {message}
+          </div>
+        )}
+
+        {/* ================= DASHBOARD ================= */}
         {activeSection === "dashboard" && (
           <>
             <h3 className="fw-bold mb-4">📈 Dashboard Overview</h3>
-            <div className="row g-3 mb-4">
+
+            {/* 🔹 Stats Cards */}
+            <div className="row g-4 mb-4">
               {Object.entries(stats).map(([key, val]) => (
-                <div className="col-6 col-md-3" key={key}>
-                  <div className="card text-center shadow-sm border-0 p-3">
-                    <h6 className="text-secondary text-capitalize">
+                <div className="col-6 col-md-4 col-lg-3" key={key}>
+                  <div className="card border-0 shadow-sm rounded-4 text-center p-3 h-100">
+                    <h6 className="text-muted text-capitalize mb-2">
                       {key.replace(/([A-Z])/g, " $1")}
                     </h6>
-                    <h3 className="fw-bold text-primary">{val}</h3>
+                    <h2 className="fw-bold text-primary">{val}</h2>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="card p-4 shadow-sm border-0">
-              <h5 className="fw-bold text-primary mb-3">Performance Chart</h5>
-              <Bar data={chartData} />
+
+            {/* 🔹 Chart */}
+            <div className="card shadow-sm border-0 rounded-4 p-4">
+              <h5 className="fw-bold text-primary mb-3">
+                📊 Performance Chart
+              </h5>
+              <div style={{ maxHeight: "400px" }}>
+                <Bar data={chartData} />
+              </div>
             </div>
           </>
         )}
 
+        {/* ================= PENDING TUTORS ================= */}
         {activeSection === "pending" && (
           <>
-            <h3 className="fw-bold mb-3">🧑‍🏫 Pending Tutor Approvals</h3>
+            <h3 className="fw-bold mb-4">🧑‍🏫 Pending Tutor Approvals</h3>
+
             {tutors.length === 0 ? (
-              <p className="text-muted">No pending tutors found.</p>
+              <div className="alert alert-info shadow-sm">
+                No pending tutors found.
+              </div>
             ) : (
-              <div className="table-responsive">
-                <table className="table table-striped align-middle shadow-sm">
-                  <thead className="table-light">
-                    <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Subject</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tutors.map((t) => (
-                      <tr key={t.id}>
-                        <td>{t.id}</td>
-                        <td>{t.name}</td>
-                        <td>{t.email}</td>
-                        <td>{t.subject || "—"}</td>
-                        <td>
-                          <button
-                            className="btn btn-success btn-sm me-2"
-                            onClick={() => approveTutor(t.id)}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => rejectTutor(t.id)}
-                          >
-                            Reject
-                          </button>
-                        </td>
+              <div className="card shadow-sm border-0 rounded-4 p-3">
+                <div className="table-responsive">
+                  <table className="table align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th className="text-center">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {tutors.map((t) => (
+                        <tr key={t.id}>
+                          <td>{t.id}</td>
+                          <td>{t.name}</td>
+                          <td>{t.email}</td>
+                          <td>{t.subject || "—"}</td>
+                          <td className="text-center">
+                            <button
+                              className="btn btn-success btn-sm me-2 px-3"
+                              onClick={() => approveTutor(t.id)}
+                            >
+                              ✔ Approve
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm px-3"
+                              onClick={() => rejectTutor(t.id)}
+                            >
+                              ✖ Reject
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </>
         )}
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default AdminDashboard;

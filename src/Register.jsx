@@ -189,7 +189,9 @@ const Register = () => {
                   className="form-control"
                   placeholder="Enter your password"
                   value={formData.password}
-                  onChange={handleChange}
+                  onChange={(e) =>
+  setFormData({ ...formData, password: e.target.value })
+}
                   required
                 />
 

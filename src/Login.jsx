@@ -39,13 +39,15 @@ const Login = () => {
         localStorage.setItem("token", res.token);
 
         const payload = JSON.parse(atob(res.token.split(".")[1]));
+
+localStorage.setItem("userName", payload.sub);
         let userRole = payload.role?.replace("ROLE_", "").toUpperCase();
 
         setMessage("Login successful!");
 
         setTimeout(() => {
           if (userRole === "ADMIN") window.location.href = "/admin";
-          else if (userRole === "TUTOR") window.location.href = "/tutor-dashboard";
+          else if (userRole === "TUTOR") window.location.href = "/tutor";
           else window.location.href = "/student-dashboard";
         }, 1000);
       } else {

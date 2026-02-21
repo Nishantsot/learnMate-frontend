@@ -1,137 +1,69 @@
-import React, { useState, useEffect } from "react";
-import {
-  fetchTutorDashboard,
-  fetchTutorCourses,
-  fetchUpcomingClasses,
-} from "./authService";
+import React, { useEffect, useState } from "react";
+import { getTutorDashboard } from "./authService";
 
-import TutorCourses from "./TutorCourses";
-import TutorAddCourse from "./TutorAddCourse";
-import TutorClasses from "./TutorClasses";
-import TutorProfile from "./TutorProfile";
+export default function TutorDashboard() {
 
-const TutorDashboard = () => {
-  const [active, setActive] = useState("dashboard");
   const [stats, setStats] = useState({});
-  const [courses, setCourses] = useState([]);
-  const [classes, setClasses] = useState([]);
 
   useEffect(() => {
-    loadDashboard();
-    loadCourses();
-    loadClasses();
+
+    loadData();
+
   }, []);
 
-  /* -------------------- 📊 Load Dashboard Stats -------------------- */
-  const loadDashboard = async () => {
-    try {
-      const data = await fetchTutorDashboard();
-      setStats(data);
-    } catch {
-      console.log("Failed to load dashboard stats");
-    }
+
+  const loadData = async () => {
+
+    const data = await getTutorDashboard();
+
+    setStats(data || {});
+
   };
 
-  /* -------------------- 📘 Load Tutor Courses -------------------- */
-  const loadCourses = async () => {
-    try {
-      const data = await fetchTutorCourses();
-      setCourses(data);
-    } catch {
-      console.log("Failed to load courses");
-    }
-  };
-
-  /* -------------------- 🎥 Load Upcoming Classes -------------------- */
-  const loadClasses = async () => {
-    try {
-      const data = await fetchUpcomingClasses();
-      setClasses(data);
-    } catch {
-      console.log("Failed to load upcoming classes");
-    }
-  };
-
-  /* -------------------- 🚪 Logout -------------------- */
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   return (
-    <div className="d-flex flex-column flex-md-row min-vh-100 bg-light">
-      
-      {/* Left Sidebar */}
-      <div className="bg-dark text-white p-3" style={{ minWidth: "250px" }}>
-        <h3 className="text-center mb-4">Tutor Dashboard</h3>
 
-        <button className="btn btn-outline-light w-100 mb-2"
-          onClick={() => setActive("dashboard")}>📊 Dashboard</button>
+    <div>
 
-        <button className="btn btn-outline-light w-100 mb-2"
-          onClick={() => setActive("courses")}>📘 My Courses</button>
+      <h3 className="mb-4 fw-bold text-white" > Tutor Dashboard</h3>
 
-        <button className="btn btn-outline-light w-100 mb-2"
-          onClick={() => setActive("add")}>➕ Add Course</button>
 
-        <button className="btn btn-outline-light w-100 mb-2"
-          onClick={() => setActive("classes")}>🎥 Live Classes</button>
+      <div className="row g-3 ">
 
-        <button className="btn btn-outline-light w-100 mb-2"
-          onClick={() => setActive("profile")}>👤 Profile</button>
 
-        <button className="btn btn-danger w-100 mt-3" onClick={logout}>Logout</button>
-      </div>
+        {[
+          { label: "Total Courses", key: "totalCourses" },
+          { label: "Approved Courses", key: "approvedCourses" },
+          { label: "Pending Courses", key: "pendingCourses" },
+          { label: "Upcoming Sessions", key: "upcomingSessions" },
+          { label: "Earnings", key: "earnings" },
+          { label: "Avg Rating", key: "avgRating" }
+        ].map((item) => (
 
-      {/* Right Content Area */}
-      <div className="flex-grow-1 p-4">
+          <div className="col-md-3" key={item.key}>
 
-        {/* Dashboard Section */}
-        {active === "dashboard" && (
-          <div>
-            <h3>📊 Dashboard Overview</h3>
-            <div className="row mt-3">
-              <div className="col-md-4">
-                <div className="card p-3 shadow">
-                  Total Courses: {stats.totalCourses}
-                </div>
-              </div>
+            <div className="card shadow-sm p-3 text-center">
 
-              <div className="col-md-4">
-                <div className="card p-3 shadow">
-                  Approved: {stats.approvedCourses}
-                </div>
-              </div>
+              <h6 className="text-muted">
+                {item.label}
+              </h6>
 
-              <div className="col-md-4">
-                <div className="card p-3 shadow">
-                  Pending: {stats.pendingCourses}
-                </div>
-              </div>
+              <h4 className="fw-bold text-primary">
+                {stats[item.key] ?? 0}
+              </h4>
+
             </div>
+
           </div>
-        )}
 
-        {/* Courses Section */}
-        {active === "courses" && (
-          <TutorCourses courses={courses} reload={loadCourses} />
-        )}
+        ))}
 
-        {/* Add Course */}
-        {active === "add" && (
-          <TutorAddCourse onCreated={loadCourses} />
-        )}
 
-        {/* Classes Section */}
-        {active === "classes" && (
-          <TutorClasses sessions={classes} reload={loadClasses} />
-        )}
-
-        {/* Profile Section */}
-        {active === "profile" && <TutorProfile />}
       </div>
-    </div>
-  );
-};
 
-export default TutorDashboard;
+
+    </div>
+
+  );
+
+}

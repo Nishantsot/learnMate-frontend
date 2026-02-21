@@ -71,11 +71,12 @@ export const resetPassword = async (email, otp, newPassword) => {
   }
 };
 
+
 /* =========================================================
-   🧩 TUTOR MODULE — PERFECTLY MATCHED TO TutorController
+   🧩 INTERNAL — TOKEN BASED AXIOS FOR TUTOR + ADMIN
 ========================================================= */
 
-const tutorAxios = () => {
+const privateApi = () => {
   const token = localStorage.getItem("token");
   return axiosInstance.create({
     baseURL: "http://localhost:8080",
@@ -86,112 +87,142 @@ const tutorAxios = () => {
   });
 };
 
-/* -------------------- 📘 COURSES -------------------- */
 
-// GET tutor courses  → backend = /tutor/courses
-export const fetchTutorCourses = async () => {
-  try {
-    const res = await tutorAxios().get("/tutor/courses");
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Failed to load courses" };
-  }
+export const getTutorDashboard = async () => {
+  const res = await privateApi().get("/tutor/dashboard");
+  return res.data;
 };
 
-// CREATE course → backend = POST /tutor/courses
-export const addCourse = async (data) => {
-  try {
-    const res = await tutorAxios().post("/tutor/courses", data);
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Failed to add course" };
-  }
+export const getTutorCourses = async () => {
+
+  const res = await privateApi().get("/tutor/courses");
+
+  return res.data;
+
 };
 
-// UPDATE course → PUT /tutor/courses/{id}
-export const updateCourse = async (id, data) => {
-  try {
-    const res = await tutorAxios().put(`/tutor/courses/${id}`, data);
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Update failed" };
-  }
+
+
+// ✅ CREATE COURSE
+
+export const CreateTutorCourse = async (data) => {
+
+  const res = await privateApi().post("/tutor/courses", data);
+
+  return res.data;
+
 };
 
-// DELETE course → DELETE /tutor/courses/{id}
-export const deleteCourse = async (id) => {
-  try {
-    const res = await tutorAxios().delete(`/tutor/courses/${id}`);
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Delete failed" };
-  }
+
+
+// ✅ UPDATE COURSE
+
+export const UdateTutorCourse = async (id, data) => {
+
+  const res = await privateApi().put(`/tutor/courses/${id}`, data);
+
+  return res.data;
+
 };
 
-/* -------------------- 📊 DASHBOARD -------------------- */
 
-// Tutor dashboard → GET /tutor/dashboard
-export const fetchTutorDashboard = async () => {
-  try {
-    const res = await tutorAxios().get("/tutor/dashboard");
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Failed to load dashboard" };
-  }
+
+// ✅ DELETE COURSE
+
+export const deleteTutorCourse = async (id) => {
+
+  const res = await privateApi().delete(`/tutor/courses/${id}`);
+
+  return res.data;
+
 };
 
-/* -------------------- 🎥 CLASSES -------------------- */
+/* -------------------- 🎥 LIVE CLASSES -------------------- */
 
-// Schedule class → POST /tutor/classes/schedule
-export const scheduleClass = async (data) => {
-  try {
-    const res = await tutorAxios().post("/tutor/classes/schedule", data);
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Schedule failed" };
-  }
+// SCHEDULE Class
+export const scheduleTutorClass = async (data) => {
+  const res = await privateApi().post("/tutor/classes/schedule", data);
+  return res.data;
 };
 
-// Fetch upcoming → GET /tutor/classes/upcoming
-export const fetchUpcomingClasses = async () => {
-  try {
-    const res = await tutorAxios().get("/tutor/classes/upcoming");
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Load failed" };
-  }
+// GET Upcoming Sessions
+export const getUpcomingTutorClasses = async () => {
+  const res = await privateApi().get("/tutor/classes/upcoming");
+  return res.data;
 };
 
-// COMPLETE class → POST /tutor/classes/{id}/complete
-export const completeClass = async (id) => {
-  try {
-    const res = await tutorAxios().post(`/tutor/classes/${id}/complete`);
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Complete failed" };
-  }
+// COMPLETE Class
+export const completeTutorClass = async (sessionId) => {
+  const res = await privateApi().post(`/tutor/classes/${sessionId}/complete`);
+  return res.data;
 };
+
+// GET Class By Room ID
+export const getClassByRoom = async (roomId) => {
+  const res = await privateApi().get(`/tutor/classes/room/${roomId}`);
+  return res.data;
+};
+export const startTutorClass = async (sessionId) => {
+
+const res = await privateApi().post(
+
+`/tutor/classes/${sessionId}/start`,
+
+{}, // body
+
+{
+
+withCredentials: true
+
+}
+
+);
+
+return res.data;
+
+};
+
 
 /* -------------------- 📂 MATERIALS -------------------- */
 
-// Add material → POST /tutor/materials?courseId=&title=&url=
-export const addMaterial = async (courseId, title, url) => {
-  try {
-    const res = await tutorAxios().post(
-      `/tutor/materials?courseId=${courseId}&title=${title}&url=${url}`
-    );
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Upload failed" };
-  }
+// ADD Material
+export const addTutorMaterial = async (courseId, title, url) => {
+  const res = await privateApi().post(
+    `/tutor/materials?courseId=${courseId}&title=${title}&url=${url}`
+  );
+  return res.data;
 };
 
-// Get materials → GET /tutor/materials?courseId=
-export const getMaterials = async (courseId) => {
-  try {
-    const res = await tutorAxios().get(`/tutor/materials?courseId=${courseId}`);
-    return res.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Failed to load materials" };
-  }
+// GET Materials
+export const getTutorMaterials = async (courseId) => {
+  const res = await privateApi().get(`/tutor/materials?courseId=${courseId}`);
+  return res.data;
+};
+
+/* =========================================================
+   🧩 ADMIN MODULE — MATCHES AdminController + AdminService
+========================================================= */
+
+// ADMIN Dashboard
+export const fetchAdminStats = async () => {
+  const res = await privateApi().get("/admin/dashboard");
+  return res.data;
+};
+
+// Pending Tutors
+export const fetchPendingTutors = async () => {
+  const res = await privateApi().get("/admin/tutors/pending");
+  return res.data;
+};
+
+// Approve Course
+export const approveTutor = async (id) => {
+  const res = await privateApi().put(`/admin/course/approve/${id}`);
+  return res.data;
+};
+
+// Reject Course
+export const rejectTutor = async (id) => {
+  const res = await privateApi().put(`/admin/course/reject/${id}`);
+  return res.data;
 };
