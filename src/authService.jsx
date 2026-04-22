@@ -76,23 +76,35 @@ export const resetPassword = async (email, otp, newPassword) => {
    🧩 INTERNAL — TOKEN BASED AXIOS FOR TUTOR + ADMIN
 ========================================================= */
 
-const privateApi = () => {
-  const token = localStorage.getItem("token");
-  return axiosInstance.create({
-    baseURL: "http://localhost:8080",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-};
+import axios from "axios";
 
+const privateApi = () => {
+
+  const token = localStorage.getItem("token");
+
+  return axios.create({
+
+    baseURL: "http://localhost:8080",
+
+    headers: {
+
+      Authorization: `Bearer ${token}`,
+
+      "Content-Type": "application/json"
+
+    }
+
+  });
+
+};
 
 export const getTutorDashboard = async () => {
-  const res = await privateApi().get("/tutor/dashboard");
-  return res.data;
-};
 
+  const res = await privateApi().get("/tutor/dashboard");
+
+  return res.data;
+
+};
 export const getTutorCourses = async () => {
 
   const res = await privateApi().get("/tutor/courses");
@@ -202,27 +214,120 @@ export const getTutorMaterials = async (courseId) => {
 /* =========================================================
    🧩 ADMIN MODULE — MATCHES AdminController + AdminService
 ========================================================= */
-
 // ADMIN Dashboard
 export const fetchAdminStats = async () => {
-  const res = await privateApi().get("/admin/dashboard");
-  return res.data;
+
+ const res = await privateApi().get("/admin/dashboard");
+
+ return res.data;
+
 };
 
-// Pending Tutors
-export const fetchPendingTutors = async () => {
-  const res = await privateApi().get("/admin/tutors/pending");
-  return res.data;
+
+// ✅ GET Pending Courses (NOT tutors)
+export const fetchPendingCourses = async () => {
+
+ const res = await privateApi().get("/admin/courses/pending");
+
+ return res.data;
+
 };
 
-// Approve Course
-export const approveTutor = async (id) => {
-  const res = await privateApi().put(`/admin/course/approve/${id}`);
-  return res.data;
+
+// ✅ Approve Course
+export const approveCourse = async (id) => {
+
+ const res = await privateApi().put(`/admin/course/approve/${id}`);
+
+ return res.data;
+
 };
 
-// Reject Course
-export const rejectTutor = async (id) => {
-  const res = await privateApi().put(`/admin/course/reject/${id}`);
-  return res.data;
+
+// ✅ Reject Course
+export const rejectCourse = async (id) => {
+
+ const res = await privateApi().put(`/admin/course/reject/${id}`);
+
+ return res.data;
+
+};
+// DASHBOARD
+
+export const fetchStudentDashboard = async()=>{
+
+ const res = await privateApi().get("/student/dashboard");
+
+ return res.data;
+
+};
+
+
+
+
+// ALL COURSES
+
+export const fetchAllCourses = async()=>{
+
+ const res = await privateApi().get("/student/courses");
+
+ return res.data;
+
+};
+
+
+
+
+// ENROLL
+
+export const enrollCourse = async(id)=>{
+
+ const res = await privateApi().post(`/student/enroll/${id}`);
+
+ return res.data;
+
+};
+
+
+
+
+// MY COURSES
+
+export const fetchMyCourses = async()=>{
+
+ const res = await privateApi().get("/student/my-courses");
+
+ return res.data;
+
+};
+
+
+
+
+// CLASSES
+
+export const fetchMyClasses = async()=>{
+
+ const res = await privateApi().get("/student/classes");
+
+ return res.data;
+
+};
+
+
+
+
+// MATERIALS
+
+export const fetchMaterials = async(courseId)=>{
+
+ const res = await privateApi().get(`/student/materials/${courseId}`);
+
+ return res.data;
+
+};
+export const getAllStudents = async () => {
+
+return authAxios.get("/admin/students");
+
 };

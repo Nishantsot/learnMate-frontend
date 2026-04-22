@@ -8,12 +8,9 @@ import "./About.css";
 
 export default function About() {
 
-  // 🔥 Hide Navbar on About Page
   useEffect(() => {
     document.body.classList.add("no-navbar");
-    return () => {
-      document.body.classList.remove("no-navbar");
-    };
+    return () => document.body.classList.remove("no-navbar");
   }, []);
 
   const aboutCards = [
@@ -35,39 +32,50 @@ export default function About() {
   ];
 
   return (
-    <section className="about-section text-light py-5">
-      <div className="about-header text-center mb-5">
-        <h2 className="fw-bold display-5 mb-3 text-gradient">About LearnMate</h2>
-        <p className="lead text-light opacity-75">
-          Discover how LearnMate helps you study smarter and grow faster 🚀
-        </p>
+    <section className="about-section text-light">
+
+      {/* ✅ SAME background as Home */}
+      <div className="about-bg"></div>
+
+      <div className="container position-relative py-5">
+        <div className="about-header text-center mb-5">
+          <h2 className="fw-bold display-5 mb-3 text-gradient">
+            About LearnMate
+          </h2>
+          <p className="lead text-light opacity-75">
+            Discover how LearnMate helps you study smarter and grow faster 🚀
+          </p>
+        </div>
+
+        <Swiper
+          modules={[Autoplay, Pagination]}
+          spaceBetween={30}
+          slidesPerView={1}
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 2500, disableOnInteraction: false }}
+          loop={true}
+          breakpoints={{
+            768: { slidesPerView: 2 },
+            1200: { slidesPerView: 3 },
+          }}
+          className="about-swiper"
+        >
+          {aboutCards.map((card, index) => (
+            <SwiperSlide key={index}>
+              <div className="card about-card border-0 shadow-lg">
+                <img src={card.img} className="card-img-top" alt={card.title} />
+                <div className="card-body">
+                  <h5 className="card-title fw-bold text-primary">
+                    {card.title}
+                  </h5>
+                  <p className="card-text text-secondary">{card.text}</p>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
 
-      <Swiper
-        modules={[Autoplay, Pagination]}
-        spaceBetween={30}
-        slidesPerView={1}
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 2500, disableOnInteraction: false }}
-        loop={true}
-        breakpoints={{
-          768: { slidesPerView: 2 },
-          1200: { slidesPerView: 3 },
-        }}
-        className="about-swiper"
-      >
-        {aboutCards.map((card, index) => (
-          <SwiperSlide key={index}>
-            <div className="card about-card text-dark border-0 shadow-lg">
-              <img src={card.img} className="card-img-top" alt={card.title} />
-              <div className="card-body">
-                <h5 className="card-title fw-bold text-primary">{card.title}</h5>
-                <p className="card-text text-secondary">{card.text}</p>
-              </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
     </section>
   );
 }

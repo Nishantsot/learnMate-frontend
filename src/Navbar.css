@@ -1,46 +1,59 @@
+/* Navbar background */
 .custom-navbar {
-  background: linear-gradient(90deg, #007bff, #00bcd4);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+/* 🔥 SAME BASE STYLE FOR ALL NAV BUTTONS */
+.btn-nav,
+.btn-main,
+.btn-outline-main {
+  padding: 6px 18px;
+  border-radius: 25px;
   transition: all 0.3s ease;
+  font-weight: 600;
 }
 
-.text-accent {
-  color: #ffe082;
+/* Default nav links */
+.btn-nav {
+  color: #fff;
+  border: 1px solid transparent;
 }
 
-.nav-link {
-  position: relative;
-  font-weight: 500;
-  margin: 0 8px;
-  transition: color 0.3s ease;
+/* 🔥 SAME HOVER AS REGISTER */
+.btn-nav:hover {
+  background: #00d4ff;
+  color: #000 !important;
+  border-color: #00d4ff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px #00d4ff;
 }
 
-.nav-link:hover {
-  color: #ffe082 !important;
+/* Active link */
+.btn-nav.active {
+  background: #00d4ff;
+  color: #000 !important;
 }
 
-/* Button Hover */
-.btn-light:hover {
-  background-color: #f0f0f0;
-  color: #0d6efd !important;
-  transform: scale(1.05);
-  transition: 0.2s ease-in-out;
+/* Login button */
+.btn-main {
+  background: #00d4ff;
 }
 
-.btn-outline-light:hover {
-  background-color: #fff;
-  color: #007bff !important;
-  transform: scale(1.05);
+.btn-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px #00d4ff;
 }
 
-/* Mobile Navbar */
-@media (max-width: 991px) {
-  .navbar-nav {
-    text-align: center;
-    padding-top: 10px;
-  }
+/* Register button */
+.btn-outline-main {
+  border: 1px solid #00d4ff;
+  color: #00d4ff;
+}
 
-  .btn {
-    width: 100%;
-    margin-top: 10px;
-  }
+.btn-outline-main:hover {
+  background: #00d4ff;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px #00d4ff;
 }

@@ -7,8 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomeSection.css";
 
 export default function HomeSection() {
-  
-  // 🔥 Hide Navbar
+
   useEffect(() => {
     document.body.classList.add("no-navbar");
     return () => document.body.classList.remove("no-navbar");
@@ -25,15 +24,19 @@ export default function HomeSection() {
       title: "Interactive & Personalized",
       desc: "Experience AI-driven courses tailored just for you.",
     },
-   {
-  img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1920&q=80",
-  title: "Learn Together, Grow Together",
-  desc: "Join our community and share knowledge with peers globally."
-},
+    {
+      img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1920&q=80",
+      title: "Learn Together, Grow Together",
+      desc: "Join our community and share knowledge with peers globally."
+    },
   ];
 
   return (
     <div className="home-section-wrapper">
+
+      {/* 🔥 Gradient overlay like Home */}
+      <div className="global-bg"></div>
+
       <Swiper
         modules={[Autoplay, Pagination]}
         slidesPerView={1}
@@ -45,16 +48,17 @@ export default function HomeSection() {
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
             <div className="slide-content">
+
               <img src={slide.img} alt={slide.title} className="slide-img" />
 
-              {/* Dark Gradient Overlay */}
+              {/* Better overlay */}
               <div className="overlay"></div>
 
-              {/* Text */}
               <div className="slide-text text-center text-light fade-in-up">
                 <h1>{slide.title}</h1>
                 <p>{slide.desc}</p>
               </div>
+
             </div>
           </SwiperSlide>
         ))}

@@ -4,61 +4,80 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./Contact.css";
 
 export default function Contact() {
-  
-  // 🔥 Hide Navbar
+
   useEffect(() => {
     document.body.classList.add("no-navbar");
     return () => document.body.classList.remove("no-navbar");
   }, []);
 
+  const contactData = [
+    {
+      icon: <Mail size={40} />,
+      title: "Email",
+      value: "support@learnmate.com",
+      link: "mailto:support@learnmate.com"
+    },
+    {
+      icon: <Phone size={40} />,
+      title: "Phone",
+      value: "+91 98765 43210",
+      link: "tel:+919876543210"
+    },
+    {
+      icon: <Github size={40} />,
+      title: "GitHub",
+      value: "github.com/learnmate",
+      link: "https://github.com/learnmate"
+    }
+  ];
+
   return (
-    <section className="contact-section text-light">
-      <div className="container-fluid px-4">
+    <section className="contact-section text-light d-flex align-items-center">
+
+      {/* ✅ SAME background as Home */}
+      <div className="floating-bg"></div>
+
+      <div className="particles">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <span key={i} style={{ "--i": i }}></span>
+        ))}
+      </div>
+
+      <div className="container position-relative">
         
-        <h2 className="text-center fw-bold display-5 mb-4 contact-title">
+        <h2 className="text-center fw-bold display-5 mb-3 contact-title">
           Contact <span>LearnMate</span>
         </h2>
+
         <p className="text-center mb-5 lead">
-          We'd love to hear from you! Reach out via email, phone, or connect with us on GitHub.
+          We'd love to hear from you! Reach out anytime.
         </p>
 
         <div className="row justify-content-center g-4">
-          
-          {/* Email */}
-          <div className="col-md-6 col-lg-4">
-            <div className="contact-card p-4 text-center shadow-lg equal-card">
-              <Mail className="contact-icon mb-3" size={40} />
-              <h5>Email</h5>
-              <p>support@learnmate.com</p>
-            </div>
-          </div>
+          {contactData.map((item, index) => (
+            <div key={index} className="col-md-6 col-lg-4 d-flex">
+              <div className="contact-card p-4 text-center shadow-lg w-100">
 
-          {/* Phone */}
-          <div className="col-md-6 col-lg-4">
-            <div className="contact-card p-4 text-center shadow-lg equal-card">
-              <Phone className="contact-icon mb-3" size={40} />
-              <h5>Phone</h5>
-              <p>+91 98765 43210</p>
-            </div>
-          </div>
+                <div className="contact-icon mb-3">
+                  {item.icon}
+                </div>
 
-          {/* GitHub */}
-          <div className="col-md-6 col-lg-4">
-            <div className="contact-card p-4 text-center shadow-lg equal-card">
-              <Github className="contact-icon mb-3" size={40} />
-              <h5>GitHub</h5>
-              <a
-                href="https://github.com/learnmate"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-light text-decoration-none"
-              >
-                github.com/learnmate
-              </a>
-            </div>
-          </div>
+                <h5>{item.title}</h5>
 
+                <a
+                  href={item.link}
+                  target={item.title === "GitHub" ? "_blank" : "_self"}
+                  rel="noopener noreferrer"
+                  className="text-light text-decoration-none contact-link"
+                >
+                  {item.value}
+                </a>
+
+              </div>
+            </div>
+          ))}
         </div>
+
       </div>
     </section>
   );

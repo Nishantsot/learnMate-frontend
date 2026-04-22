@@ -1,59 +1,69 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./Navbar.css"; // custom style file
+import "./Navbar.css";
 
 export default function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm custom-navbar">
       <div className="container-fluid px-4">
+
         {/* Brand */}
         <Link className="navbar-brand fw-bold fs-3 text-light" to="/">
           Learn<span className="text-accent">Mate</span>
         </Link>
 
-        {/* Toggle Button */}
+        {/* Toggle */}
         <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Nav Links */}
+        {/* Links */}
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul className="navbar-nav align-items-center">
+          <ul className="navbar-nav align-items-center gap-2">
+
+            {/* Home */}
+          <li className="nav-item">
+  <NavLink to="/home" className="btn btn-nav">
+    Home
+  </NavLink>
+</li>
+            {/* Slider */}
+            
+
+            {/* About */}
             <li className="nav-item">
-              <Link className="nav-link text-light" to="/home">
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light" to="/about">
+              <NavLink to="/about" className="btn btn-nav">
                 About
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light" to="/contact">
-                Contact
-              </Link>
+              </NavLink>
             </li>
 
-            <li className="nav-item ms-3">
-              <Link className="btn btn-light text-primary px-4 fw-semibold shadow-sm" to="/login">
+            {/* Contact */}
+            <li className="nav-item">
+              <NavLink to="/contact" className="btn btn-nav">
+                Contact
+              </NavLink>
+            </li>
+
+            {/* Login */}
+            <li className="nav-item">
+              <NavLink to="/login" className="btn btn-main">
                 Login
-              </Link>
+              </NavLink>
             </li>
-            <li className="nav-item ms-2">
-              <Link className="btn btn-outline-light px-4 fw-semibold" to="/register">
+
+            {/* Register */}
+            <li className="nav-item">
+              <NavLink to="/register" className="btn btn-outline-main">
                 Register
-              </Link>
+              </NavLink>
             </li>
+
           </ul>
         </div>
       </div>

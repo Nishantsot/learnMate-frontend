@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Home.css";
 
@@ -15,37 +16,43 @@ const Home = () => {
 
   useEffect(() => {
     let index = 0;
-    let timeout;
+    let typingTimeout;
+    let deletingTimeout;
 
     const type = () => {
       if (index < slogans[currentSlogan].length) {
-        setDisplayText((prev) => prev + slogans[currentSlogan].charAt(index));
+        setDisplayText(slogans[currentSlogan].slice(0, index + 1));
         index++;
-        timeout = setTimeout(type, 80);
+        typingTimeout = setTimeout(type, 80);
       } else {
-        setTimeout(() => deleteText(), 2000);
+        deletingTimeout = setTimeout(deleteText, 2000);
       }
     };
 
     const deleteText = () => {
       if (index > 0) {
-        setDisplayText((prev) => prev.slice(0, -1));
+        setDisplayText(slogans[currentSlogan].slice(0, index - 1));
         index--;
-        timeout = setTimeout(deleteText, 40);
+        deletingTimeout = setTimeout(deleteText, 40);
       } else {
         setCurrentSlogan((prev) => (prev + 1) % slogans.length);
       }
     };
 
     type();
-    return () => clearTimeout(timeout);
+
+    return () => {
+      clearTimeout(typingTimeout);
+      clearTimeout(deletingTimeout);
+    };
   }, [currentSlogan]);
 
   return (
     <section id="home" className="home-section text-light">
+      
       <div className="floating-bg"></div>
 
-      {/* Floating particles */}
+      {/* Particles */}
       <div className="particles">
         {Array.from({ length: 20 }).map((_, i) => (
           <span key={i} style={{ "--i": i }}></span>
@@ -60,12 +67,13 @@ const Home = () => {
           <span className="cursor">|</span>
         </h4>
 
-        <a
-          href="/register"
+        {/* ✅ FIXED navigation */}
+        <Link
+          to="/register"
           className="btn btn-lg btn-start shadow-lg fw-semibold"
         >
           Get Started
-        </a>
+        </Link>
       </div>
     </section>
   );

@@ -15,13 +15,11 @@ X
 } from "lucide-react";
 
 
-export default function TutorLayout() {
-
+export default function TutorLayout(){
 
 const navigate = useNavigate();
 
-const [showSidebar, setShowSidebar] = useState(false);
-
+const [showSidebar,setShowSidebar] = useState(false);
 
 
 const logout = ()=>{
@@ -33,30 +31,23 @@ navigate("/login");
 };
 
 
+return(
 
-return (
-
-
-<div className="d-flex min-vh-100 tutor-bg">
-
+<div className="admin-layout">
 
 
 {/* MOBILE HEADER */}
 
 
-<div className="d-md-none p-3 bg-dark text-white d-flex justify-content-between align-items-center w-100">
+<div className="mobile-header d-md-none">
 
 
-<h5 className="mb-0">
-
-Tutor Panel
-
-</h5>
+<h5>Tutor Panel</h5>
 
 
 <Menu
 
-style={{cursor:"pointer"}}
+className="burger-icon"
 
 onClick={()=>setShowSidebar(true)}
 
@@ -70,37 +61,28 @@ onClick={()=>setShowSidebar(true)}
 {/* SIDEBAR */}
 
 
-<div
-
-className={`sidebar-premium text-white p-4
-
-${showSidebar?"show-sidebar":""}
-
-`}
-
->
+<div className={`admin-sidebar ${showSidebar ? "open" : ""}`}>
 
 
-{/* CLOSE BUTTON MOBILE */}
+
+{/* CLOSE MOBILE */}
 
 
 <div className="d-md-none text-end mb-3">
 
-
 <X
 
-style={{cursor:"pointer"}}
+className="close-icon"
 
 onClick={()=>setShowSidebar(false)}
 
 />
 
-
 </div>
 
 
 
-<h4 className="mb-4 text-info">
+<h4 className="text-info mb-4">
 
 Tutor Panel
 
@@ -116,6 +98,8 @@ icon={<LayoutDashboard size={18}/>}
 
 text="Dashboard"
 
+closeSidebar={()=>setShowSidebar(false)}
+
 />
 
 
@@ -127,6 +111,8 @@ to="/tutor/courses"
 icon={<BookOpen size={18}/>}
 
 text="Courses"
+
+closeSidebar={()=>setShowSidebar(false)}
 
 />
 
@@ -140,6 +126,8 @@ icon={<Video size={18}/>}
 
 text="Live Classes"
 
+closeSidebar={()=>setShowSidebar(false)}
+
 />
 
 
@@ -152,6 +140,8 @@ icon={<FileText size={18}/>}
 
 text="Materials"
 
+closeSidebar={()=>setShowSidebar(false)}
+
 />
 
 
@@ -160,7 +150,7 @@ text="Materials"
 
 onClick={logout}
 
-className="btn btn-danger mt-5 w-100 rounded-pill"
+className="btn btn-danger w-100 mt-auto"
 
 >
 
@@ -173,22 +163,34 @@ className="btn btn-danger mt-5 w-100 rounded-pill"
 
 
 
-{/* MAIN CONTENT */}
+{/* OVERLAY */}
+
+
+{showSidebar && (
+
+<div
+
+className="sidebar-overlay"
+
+onClick={()=>setShowSidebar(false)}
+
+/>
+
+)}
 
 
 
-<div className="flex-grow-1 p-4 content-area">
+{/* CONTENT */}
 
+
+<div className="admin-content">
 
 <Outlet/>
 
-
 </div>
 
 
-
 </div>
-
 
 );
 
@@ -196,37 +198,31 @@ className="btn btn-danger mt-5 w-100 rounded-pill"
 
 
 
-
-function SidebarLink({to,icon,text}){
-
+function SidebarLink({to,icon,text,closeSidebar}){
 
 return(
-
 
 <NavLink
 
 to={to}
 
+onClick={closeSidebar}
+
 className={({isActive})=>
 
-`d-flex align-items-center gap-2 p-3 mb-2 rounded sidebar-link
+`sidebar-link-premium d-flex align-items-center gap-2
 
-${isActive?"active-premium":""}
-
-`
+${isActive ? "active" : ""}`
 
 }
 
 >
 
-
 {icon}
 
 {text}
 
-
 </NavLink>
-
 
 );
 

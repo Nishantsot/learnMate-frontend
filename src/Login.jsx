@@ -48,7 +48,7 @@ localStorage.setItem("userName", payload.sub);
         setTimeout(() => {
           if (userRole === "ADMIN") window.location.href = "/admin";
           else if (userRole === "TUTOR") window.location.href = "/tutor";
-          else window.location.href = "/student-dashboard";
+else window.location.href = "/student";
         }, 1000);
       } else {
         setMessage(res.message || "Login failed!");

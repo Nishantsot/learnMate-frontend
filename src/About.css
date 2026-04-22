@@ -1,17 +1,49 @@
 .about-section {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a40, #3f51b5);
-  padding: 120px 0 80px; /* Added top padding to fix navbar overlap */
+  padding: 120px 0 80px;
   overflow: hidden;
+  position: relative;
+
+  /* ✅ SAME animated gradient like Home */
+  background: linear-gradient(135deg, #1a1a40, #3f51b5, #283593);
+  background-size: 200% 200%;
+  animation: gradientMove 10s ease infinite;
 }
 
+/* ✅ gradient animation */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ✅ glow effect like Home */
+.about-section::before {
+  content: "";
+  position: absolute;
+  width: 1200px;
+  height: 1200px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+  top: -300px;
+  left: -300px;
+  filter: blur(90px);
+  animation: floatGlow 8s infinite alternate;
+}
+
+@keyframes floatGlow {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 40px); }
+}
+
+/* Header gradient text (keep yours but smoother) */
 .about-header h2 {
-  background: linear-gradient(90deg, #ffcc70, #ff8177);
+  background: linear-gradient(90deg, #00d4ff, #ffffff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
+/* Swiper */
 .about-swiper {
   width: 100%;
   max-width: 1300px;
@@ -19,24 +51,29 @@
   padding: 0 20px;
 }
 
+/* ✅ Glass effect cards (upgrade) */
 .about-card {
   border-radius: 20px;
   overflow: hidden;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
   transition: all 0.4s ease;
+  color: #fff;
 }
 
 .about-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
 }
 
+/* Image */
 .about-card img {
   height: 230px;
   object-fit: cover;
   width: 100%;
 }
 
+/* Text */
 .card-body {
   padding: 1.5rem;
 }
@@ -44,14 +81,15 @@
 .card-title {
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
+  color: #edf1f1;
 }
 
 .card-text {
   font-size: 1rem;
-  color: #333;
+  color: #e0e0ff;
 }
 
-/* Responsive Adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .about-card img {
     height: 180px;
@@ -65,4 +103,9 @@
     font-size: 0.9rem;
   }
 }
-
+.card-text {
+  color: #ffffff;
+}
+.about-header p {
+  color: #ffffff !important;
+}
