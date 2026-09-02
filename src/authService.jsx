@@ -356,3 +356,23 @@ export const fetchMaterials = async (courseId) => {
 
   return res.data;
 };
+export const askAiTutor = async (message) => {
+  try {
+    const response = await axiosInstance.post(
+      "/student/ai/chat",
+      {
+        message,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("AI Tutor Error:", error);
+
+    throw (
+      error.response?.data || {
+        message: "AI Tutor is currently unavailable",
+      }
+    );
+  }
+};
