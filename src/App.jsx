@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 
 // Common Pages
@@ -15,6 +16,7 @@ import Login from "./Login";
 import Register from "./Register";
 import LiveClass from "./LiveClass";
 import HomeSection from "./HomeSection";
+
 // Dashboards
 import AdminDashboard from "./AdminDashboard";
 import StudentDashboard from "./StudentDashboard";
@@ -35,7 +37,6 @@ import TutorMaterials from "./TutorMaterials";
 function LayoutWrapper() {
   const location = useLocation();
 
-  //  Improved logic
   const hideNavbarRoutes = [
     "/admin",
     "/student",
@@ -53,13 +54,13 @@ function LayoutWrapper() {
       {!shouldHideNavbar && <Navbar />}
 
       <Routes>
-        {/* Public */}
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
-<Route path="/home" element={<HomeSection />} />
+        <Route path="/home" element={<HomeSection />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* Auth */}
+        {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -83,8 +84,8 @@ function LayoutWrapper() {
           <Route path="live/:roomId" element={<LiveClass />} />
         </Route>
 
-        {/*  404 fallback */}
-        <Route path="*" element={<h2 style={{textAlign:"center"}}>Page Not Found</h2>} />
+        {/* Unknown route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

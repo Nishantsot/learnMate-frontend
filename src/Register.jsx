@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { registerUser, verifyOtp, resendOtp } from "./authService";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import {
+  registerUser,
+  verifyOtp,
+  resendOtp,
+} from "./authService";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Register.css";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,13 +23,14 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [step, setStep] = useState("register");
+
   const [otp, setOtp] = useState("");
   const [timer, setTimer] = useState(60);
   const [resendDisabled, setResendDisabled] = useState(true);
 
   const [showPassword, setShowPassword] = useState(false);
 
-  //  Hide Navbar on Register page
+  // Hide Navbar
   useEffect(() => {
     document.body.classList.add("no-navbar");
 
@@ -29,86 +39,180 @@ const Register = () => {
     };
   }, []);
 
-  //  Timer
+  // OTP Timer
   useEffect(() => {
-    if (step === "verify" && timer > 0) {
-      const countdown = setInterval(() => setTimer((t) => t - 1), 1000);
-      return () => clearInterval(countdown);
-    } else if (timer === 0) {
+    if (step !== "verify") return;
+
+    if (timer <= 0) {
       setResendDisabled(false);
+      return;
     }
+
+    const countdown = setInterval(() => {
+      setTimer((currentTimer) => {
+        if (currentTimer <= 1) {
+          clearInterval(countdown);
+          setResendDisabled(false);
+          return 0;
+        }
+
+        return currentTimer - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdown);
   }, [timer, step]);
 
+  // Input Change
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((previousData) => ({
+      ...previousData,
+      [name]: value,
+    }));
   };
 
+  // OTP Change
   const handleOtpChange = (e) => {
-    setOtp(e.target.value);
+    const value = e.target.value.replace(/\D/g, "");
+
+    setOtp(value);
   };
 
-  // ✅ REGISTER SUBMIT HANDLER
+  // REGISTER
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
     setMessage("");
 
     try {
       const res = await registerUser(formData);
-      const msg = res.message || "Registration successful! Please verify OTP.";
+
+      const msg =
+        res?.message ||
+        "Registration successful! Please verify OTP.";
+
       setMessage(msg);
 
+      // User already verified
       if (/already registered and verified/i.test(msg)) {
-        setTimeout(() => (window.location.href = "/login"), 1500);
+        setTimeout(() => {
+          navigate("/login");
+        }, 1200);
+
         return;
       }
 
+      // Go to OTP verification
       setStep("verify");
+      setOtp("");
       setTimer(60);
       setResendDisabled(true);
     } catch (err) {
-      const msg = err.message || "Registration failed!";
+      console.error("Registration error:", err);
+
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        err?.message ||
+        "Registration failed!";
+
       setMessage(msg);
-      if (/already registered and verified/i.test(msg)) {
-        setTimeout(() => (window.location.href = "/login"), 1500);
+
+      if (
+        typeof msg === "string" &&
+        /already registered and verified/i.test(msg)
+      ) {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1200);
       }
     } finally {
       setLoading(false);
     }
   };
 
-  //  VERIFY OTP
+  // VERIFY OTP
   const handleVerifyOtp = async () => {
+    if (!otp.trim()) {
+      setMessage("Please enter OTP.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
+
     try {
-      const res = await verifyOtp(formData.email, otp);
-      setMessage(res.message || "OTP verified successfully!");
-      if (res.message.toLowerCase().includes("success")) {
-        alert("✅ Account verified successfully! Please login.");
-        window.location.href = "/login";
+      const res = await verifyOtp(
+        formData.email,
+        otp
+      );
+
+      const msg =
+        res?.message ||
+        "OTP verified successfully!";
+
+      setMessage(msg);
+
+      if (/success|verified/i.test(msg)) {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1200);
       }
     } catch (err) {
-      setMessage(err.message || "OTP verification failed!");
+      console.error(
+        "OTP verification error:",
+        err
+      );
+
+      setMessage(
+        err?.response?.data?.message ||
+          err?.response?.data ||
+          err?.message ||
+          "OTP verification failed!"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  //  RESEND OTP
+  // RESEND OTP
   const handleResendOtp = async () => {
+    if (!formData.email) {
+      setMessage("Email is required.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
+
     try {
-      const res = await resendOtp(formData.email);
-      setMessage(res.message || "OTP resent successfully!");
+      const res = await resendOtp(
+        formData.email
+      );
+
+      setMessage(
+        res?.message ||
+          "OTP resent successfully!"
+      );
+
+      setOtp("");
       setTimer(60);
       setResendDisabled(true);
     } catch (err) {
-      setMessage(err.message || "Failed to resend OTP!");
+      console.error(
+        "Resend OTP error:",
+        err
+      );
+
+      setMessage(
+        err?.response?.data?.message ||
+          err?.response?.data ||
+          err?.message ||
+          "Failed to resend OTP!"
+      );
     } finally {
       setLoading(false);
     }
@@ -118,39 +222,54 @@ const Register = () => {
     <div className="register-page">
       <div className="container d-flex justify-content-center align-items-center min-vh-100">
         <div className="register-card shadow-lg p-4 rounded-4">
+
           <h2 className="text-center mb-4 fw-bold text-gradient">
-            {step === "register" ? "Create Your LearnMate Account" : "Verify Your Email"}
+            {step === "register"
+              ? "Create Your LearnMate Account"
+              : "Verify Your Email"}
           </h2>
 
+          {/* Message */}
           {message && (
             <div
               className={`alert text-center ${
-                /success|otp sent|verify/i.test(message)
+                /success|otp sent|verify|verified/i.test(
+                  String(message)
+                )
                   ? "alert-success"
                   : "alert-danger"
               }`}
             >
               {message}
-              {/already registered and verified/i.test(message) && (
+
+              {/already registered and verified/i.test(
+                String(message)
+              ) && (
                 <div className="mt-2">
-                  <a
-                    href="/login"
+
+                  <Link
+                    to="/login"
                     className="fw-semibold text-decoration-underline text-primary"
                   >
                     Go to Login
-                  </a>
+                  </Link>
+
                 </div>
               )}
             </div>
           )}
 
-          {/* 🔹 Register Form */}
+          {/* REGISTER FORM */}
+
           {step === "register" && (
             <form onSubmit={handleSubmit}>
+
+              {/* Name */}
               <div className="mb-3">
                 <label className="form-label text-light fw-semibold">
                   Full Name
                 </label>
+
                 <input
                   type="text"
                   name="name"
@@ -162,10 +281,13 @@ const Register = () => {
                 />
               </div>
 
+              {/* Email */}
               <div className="mb-3">
+
                 <label className="form-label text-light fw-semibold">
                   Email
                 </label>
+
                 <input
                   type="email"
                   name="email"
@@ -175,28 +297,37 @@ const Register = () => {
                   onChange={handleChange}
                   required
                 />
+
               </div>
 
-              {/* 👁️ Password Field with Show/Hide */}
+              {/* Password */}
               <div className="mb-3 position-relative">
+
                 <label className="form-label text-light fw-semibold">
                   Password
                 </label>
 
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
                   name="password"
                   className="form-control"
                   placeholder="Enter your password"
                   value={formData.password}
-                  onChange={(e) =>
-  setFormData({ ...formData, password: e.target.value })
-}
+                  onChange={handleChange}
+                  minLength={6}
                   required
                 />
 
                 <span
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
                   className="password-toggle-icon"
                   style={{
                     position: "absolute",
@@ -204,53 +335,77 @@ const Register = () => {
                     top: "40px",
                     cursor: "pointer",
                     fontSize: "20px",
-                    color: "#fff",
                   }}
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword
+                    ? "🙈"
+                    : "👁️"}
                 </span>
+
               </div>
 
-              {/* Role Dropdown */}
               <div className="mb-3">
+
                 <label className="form-label text-light fw-semibold">
                   Select Role
                 </label>
+
                 <select
                   name="role"
                   className="form-select"
                   value={formData.role}
                   onChange={handleChange}
                 >
-                  <option value="STUDENT">🎓 Student</option>
-                  <option value="TUTOR">🧑‍🏫 Tutor</option>
-                  <option value="ADMIN">👑 Admin</option>
+                  <option value="STUDENT">
+                    🎓 Student
+                  </option>
+
+                  <option value="TUTOR">
+                    🧑‍🏫 Tutor
+                  </option>
+
+                  <option value="ADMIN">
+                    👑 Admin
+                  </option>
                 </select>
+
               </div>
 
+              {/* Register Button */}
               <div className="d-grid mt-4">
+
                 <button
                   type="submit"
                   className="btn btn-light text-primary fw-bold py-2"
                   disabled={loading}
                 >
-                  {loading ? "Registering..." : "Register"}
+                  {loading
+                    ? "Registering..."
+                    : "Register"}
                 </button>
+
               </div>
+
             </form>
           )}
 
-          {/*  OTP Verification */}
+          {/* OTP VERIFICATION */}
+
           {step === "verify" && (
             <div className="text-center">
+
               <p className="text-light fw-semibold">
                 Enter the OTP sent to{" "}
-                <span className="text-warning">{formData.email}</span>
+                <span className="text-warning">
+                  {formData.email}
+                </span>
               </p>
 
               <div className="mb-3">
+
                 <input
                   type="text"
+                  inputMode="numeric"
                   className="form-control text-center fw-bold fs-5"
                   placeholder="Enter OTP"
                   value={otp}
@@ -258,48 +413,86 @@ const Register = () => {
                   maxLength={6}
                   required
                 />
+
               </div>
 
+              {/* Verify OTP */}
               <div className="d-grid mt-3">
+
                 <button
+                  type="button"
                   onClick={handleVerifyOtp}
                   className="btn btn-success fw-bold py-2"
-                  disabled={loading}
+                  disabled={
+                    loading ||
+                    otp.length === 0
+                  }
                 >
-                  {loading ? "Verifying..." : "Verify OTP"}
+                  {loading
+                    ? "Verifying..."
+                    : "Verify OTP"}
                 </button>
+
               </div>
 
+              {/* Resend */}
               <p className="text-light mt-3">
-                Didn’t get OTP?{" "}
+
+                Didn&apos;t get OTP?{" "}
+
                 <button
+                  type="button"
                   onClick={handleResendOtp}
-                  disabled={resendDisabled}
+                  disabled={
+                    resendDisabled ||
+                    loading
+                  }
                   className="btn btn-link text-warning fw-semibold p-0"
                 >
                   Resend
                 </button>
+
               </p>
 
-              <p className="text-light">
-                You can resend OTP in <span className="fw-bold">{timer}s</span>
-              </p>
+              {resendDisabled && (
+                <p className="text-light">
+                  You can resend OTP in{" "}
+                  <span className="fw-bold">
+                    {timer}s
+                  </span>
+                </p>
+              )}
+
+              {!resendDisabled && (
+                <p className="text-success fw-semibold">
+                  You can resend OTP now.
+                </p>
+              )}
+
             </div>
           )}
 
-          {/* Footer */}
+          {/* LOGIN LINK */}
+
           {step === "register" && (
             <p className="text-center mt-4 text-light">
+
               Already have an account?{" "}
-              <a href="/login" className="text-warning fw-semibold">
+
+              <Link
+                to="/login"
+                className="text-warning fw-semibold text-decoration-none"
+              >
                 Login here
-              </a>
+              </Link>
+
             </p>
           )}
+
         </div>
       </div>
     </div>
   );
 };
 
-export default Register; 
+export default Register;
