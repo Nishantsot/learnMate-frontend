@@ -34,7 +34,7 @@ export default function HomeSection() {
   return (
     <div className="home-section-wrapper">
 
-      {/* 🔥 Gradient overlay like Home */}
+      {/*  Gradient overlay like Home */}
       <div className="global-bg"></div>
 
       <Swiper

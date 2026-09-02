@@ -18,7 +18,7 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔥 Hide Navbar on Login Page
+  //  Hide Navbar on Login Page
   useEffect(() => {
     document.body.classList.add("no-navbar");
     return () => {

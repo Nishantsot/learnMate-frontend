@@ -4,7 +4,7 @@
   backdrop-filter: blur(10px);
 }
 
-/* 🔥 SAME BASE STYLE FOR ALL NAV BUTTONS */
+/*  SAME BASE STYLE FOR ALL NAV BUTTONS */
 .btn-nav,
 .btn-main,
 .btn-outline-main {
@@ -20,7 +20,7 @@
   border: 1px solid transparent;
 }
 
-/* 🔥 SAME HOVER AS REGISTER */
+/*  SAME HOVER AS REGISTER */
 .btn-nav:hover {
   background: #00d4ff;
   color: #000 !important;

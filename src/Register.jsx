@@ -20,7 +20,7 @@ const Register = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // 🔥 Hide Navbar on Register page
+  //  Hide Navbar on Register page
   useEffect(() => {
     document.body.classList.add("no-navbar");
 
@@ -29,7 +29,7 @@ const Register = () => {
     };
   }, []);
 
-  // ⏳ Timer
+  //  Timer
   useEffect(() => {
     if (step === "verify" && timer > 0) {
       const countdown = setInterval(() => setTimer((t) => t - 1), 1000);
@@ -80,7 +80,7 @@ const Register = () => {
     }
   };
 
-  // ✅ VERIFY OTP
+  //  VERIFY OTP
   const handleVerifyOtp = async () => {
     setLoading(true);
     setMessage("");
@@ -98,7 +98,7 @@ const Register = () => {
     }
   };
 
-  // ✅ RESEND OTP
+  //  RESEND OTP
   const handleResendOtp = async () => {
     setLoading(true);
     setMessage("");
@@ -240,7 +240,7 @@ const Register = () => {
             </form>
           )}
 
-          {/* 🔹 OTP Verification */}
+          {/*  OTP Verification */}
           {step === "verify" && (
             <div className="text-center">
               <p className="text-light fw-semibold">

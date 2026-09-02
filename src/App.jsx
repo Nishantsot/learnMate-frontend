@@ -35,7 +35,7 @@ import TutorMaterials from "./TutorMaterials";
 function LayoutWrapper() {
   const location = useLocation();
 
-  // ✅ Improved logic
+  //  Improved logic
   const hideNavbarRoutes = [
     "/admin",
     "/student",
@@ -83,7 +83,7 @@ function LayoutWrapper() {
           <Route path="live/:roomId" element={<LiveClass />} />
         </Route>
 
-        {/* ✅ 404 fallback */}
+        {/*  404 fallback */}
         <Route path="*" element={<h2 style={{textAlign:"center"}}>Page Not Found</h2>} />
       </Routes>
     </>

@@ -34,7 +34,7 @@ export default function About() {
   return (
     <section className="about-section text-light">
 
-      {/* ✅ SAME background as Home */}
+      {/*  SAME background as Home */}
       <div className="about-bg"></div>
 
       <div className="container position-relative py-5">

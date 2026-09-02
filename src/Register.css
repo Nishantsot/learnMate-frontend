@@ -1,6 +1,6 @@
 
 
-/* ✅ Full-screen gradient background */
+/*  Full-screen gradient background */
 .register-page {
   width: 100vw;
   height: 100vh;
@@ -14,14 +14,14 @@
   position: relative;
 }
 
-/* ✅ Prevent navbar overlap */
+/*  Prevent navbar overlap */
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
 }
 
-/* ✅ Register Card perfectly centered */
+/* Register Card perfectly centered */
 .register-card {
   width: 100%;
   max-width: 400px;
@@ -35,13 +35,13 @@ body {
   text-align: left;
 }
 
-/* 🟣 Hover animation */
+/*  Hover animation */
 .register-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* 🟡 Gradient title */
+/*  Gradient title */
 .text-gradient {
   background: linear-gradient(90deg, #ffcc70, #ff8177);
   -webkit-background-clip: text;
@@ -60,7 +60,7 @@ body {
   box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.4);
 }
 
-/* ✅ Responsive adjustments */
+/*  Responsive adjustments */
 @media (max-width: 768px) {
   .register-card {
     max-width: 90%;

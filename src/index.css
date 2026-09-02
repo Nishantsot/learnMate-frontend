@@ -1,4 +1,3 @@
-/* ================= RESET ================= */
 
 *{
 margin:0;
@@ -7,7 +6,6 @@ box-sizing:border-box;
 }
 
 
-/* ================= ROOT ================= */
 
 :root{
 
@@ -21,7 +19,6 @@ background-color:#0f172a;
 }
 
 
-/* ================= BODY ================= */
 
 body{
 
@@ -36,7 +33,6 @@ overflow-x:hidden;
 }
 
 
-/* ================= LINKS ================= */
 
 a{
 
@@ -53,7 +49,6 @@ color:#06b6d4;
 }
 
 
-/* ================= BUTTON ================= */
 
 button{
 
@@ -73,7 +68,6 @@ opacity:0.9;
 }
 
 
-/* ================= MAIN LAYOUT ================= */
 
 .admin-layout{
 
@@ -86,7 +80,6 @@ overflow-x:hidden;
 }
 
 
-/* ================= SIDEBAR ================= */
 
 .admin-sidebar{
 
@@ -114,7 +107,6 @@ z-index:1000;
 }
 
 
-/* ================= MOBILE SIDEBAR ================= */
 
 @media(max-width:767px){
 
@@ -133,7 +125,6 @@ transform:translateX(0);
 }
 
 
-/* ================= DESKTOP SIDEBAR ================= */
 
 @media(min-width:768px){
 
@@ -152,7 +143,6 @@ display:none;
 }
 
 
-/* ================= CONTENT ================= */
 
 .admin-content{
 
@@ -175,7 +165,6 @@ margin-left:250px;
 }
 
 
-/* ================= MOBILE HEADER ================= */
 
 .mobile-header{
 
@@ -203,7 +192,6 @@ z-index:1100;
 }
 
 
-/* ================= ICONS ================= */
 
 .burger-icon,
 .close-icon{
@@ -213,7 +201,6 @@ cursor:pointer;
 }
 
 
-/* ================= OVERLAY ================= */
 
 .sidebar-overlay{
 
@@ -232,7 +219,6 @@ z-index:999;
 }
 
 
-/* ================= SIDEBAR LINKS ================= */
 
 .sidebar-link-premium{
 

@@ -34,7 +34,7 @@ export default function Contact() {
   return (
     <section className="contact-section text-light d-flex align-items-center">
 
-      {/* ✅ SAME background as Home */}
+      {/* SAME background as Home */}
       <div className="floating-bg"></div>
 
       <div className="particles">

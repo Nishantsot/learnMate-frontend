@@ -67,7 +67,7 @@ const Home = () => {
           <span className="cursor">|</span>
         </h4>
 
-        {/* ✅ FIXED navigation */}
+        {/*  FIXED navigation */}
         <Link
           to="/register"
           className="btn btn-lg btn-start shadow-lg fw-semibold"
