@@ -11,8 +11,22 @@ import {
   Legend,
 } from "chart.js";
 
+import {
+  Users,
+  GraduationCap,
+  UserRound,
+  BookOpen,
+  Clock3,
+  IndianRupee,
+  CalendarCheck2,
+  BadgeCheck,
+  BarChart3,
+} from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
+
 import AdminSidebar from "./AdminSlider";
+import "./AdminDashboard.css";
 
 ChartJS.register(
   BarElement,
@@ -27,12 +41,18 @@ export default function AdminDashboard() {
 
   const [stats, setStats] = useState({});
   const [courses, setCourses] = useState([]);
-  const [activeSection, setActiveSection] = useState("dashboard");
 
-  // AUTH CHECK
+  const [activeSection, setActiveSection] =
+    useState("dashboard");
+
+  const [loading, setLoading] =
+    useState(true);
+
+
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token =
+      localStorage.getItem("token");
 
     if (!token) {
       navigate("/login");
@@ -40,286 +60,699 @@ export default function AdminDashboard() {
     }
 
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
+      const payload = JSON.parse(
+        atob(
+          token
+            .split(".")[1]
+            .replace(/-/g, "+")
+            .replace(/_/g, "/")
+        )
+      );
 
-      if (payload.role !== "ADMIN") {
+      const role = payload.role
+        ?.replace("ROLE_", "")
+        .toUpperCase();
+
+      if (role !== "ADMIN") {
         navigate("/login");
         return;
       }
 
       loadData();
+
     } catch (error) {
-      console.error("Invalid token:", error);
+      console.error(
+        "Invalid token:",
+        error
+      );
+
       localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userName");
+
       navigate("/login");
     }
   }, [navigate]);
 
-  // LOAD DATA
-
+  
   const loadData = async () => {
     try {
-      const statsRes = await axiosInstance.get("/admin/dashboard");
-      const courseRes = await axiosInstance.get("/admin/courses/pending");
+      setLoading(true);
 
-      setStats(statsRes.data);
-      setCourses(courseRes.data);
+      const [
+        statsResponse,
+        coursesResponse,
+      ] = await Promise.all([
+        axiosInstance.get(
+          "/admin/dashboard"
+        ),
+
+        axiosInstance.get(
+          "/admin/courses/pending"
+        ),
+      ]);
+
+      setStats(
+        statsResponse.data || {}
+      );
+
+      setCourses(
+        coursesResponse.data || []
+      );
+
     } catch (error) {
-      console.error("Failed to load admin data:", error);
+      console.error(
+        "Failed to load admin data:",
+        error
+      );
 
-      if (error.response?.status === 401) {
+      if (
+        error.response?.status === 401
+      ) {
         localStorage.removeItem("token");
+
         navigate("/login");
-      } else if (error.response?.status === 403) {
-        alert("You don't have ADMIN permission.");
+
+      } else if (
+        error.response?.status === 403
+      ) {
+
+        alert(
+          "You don't have ADMIN permission."
+        );
+
         navigate("/login");
+
       } else {
-        alert("Failed to load admin data");
+
+        alert(
+          "Failed to load admin data"
+        );
       }
+
+    } finally {
+      setLoading(false);
     }
   };
 
-  // APPROVE COURSE
 
   const approveCourse = async (id) => {
     try {
-      await axiosInstance.put(`/admin/course/approve/${id}`);
+      await axiosInstance.put(
+        `/admin/course/approve/${id}`
+      );
 
-      alert("Course approved successfully");
+      await loadData();
 
-      loadData();
     } catch (error) {
-      console.error("Approve error:", error);
-      alert("Failed to approve course");
+      console.error(
+        "Approve error:",
+        error
+      );
+
+      alert(
+        "Failed to approve course"
+      );
     }
   };
 
-  // REJECT COURSE
+
 
   const rejectCourse = async (id) => {
     try {
-      await axiosInstance.put(`/admin/course/reject/${id}`);
+      await axiosInstance.put(
+        `/admin/course/reject/${id}`
+      );
 
-      alert("Course rejected successfully");
+      await loadData();
 
-      loadData();
     } catch (error) {
-      console.error("Reject error:", error);
-      alert("Failed to reject course");
+      console.error(
+        "Reject error:",
+        error
+      );
+
+      alert(
+        "Failed to reject course"
+      );
     }
   };
 
-  // CHART
+
+  const dashboardCards = [
+    {
+      title: "Total Users",
+      value: stats.totalUsers ?? 0,
+      icon: <Users size={24} />,
+      className: "blue-card",
+    },
+
+    {
+      title: "Tutors",
+      value: stats.tutors ?? 0,
+      icon:
+        <GraduationCap size={24} />,
+      className: "green-card",
+    },
+
+    {
+      title: "Students",
+      value:
+        stats.students ?? 0,
+      icon:
+        <UserRound size={24} />,
+      className: "orange-card",
+    },
+
+    {
+      title:
+        "Approved Courses",
+      value:
+        stats.approvedCourses ?? 0,
+      icon:
+        <BookOpen size={24} />,
+      className: "purple-card",
+    },
+
+    {
+      title:
+        "Pending Courses",
+      value:
+        stats.pendingCourses ?? 0,
+      icon:
+        <Clock3 size={24} />,
+      className: "yellow-card",
+    },
+
+    {
+      title: "Revenue",
+
+      value:
+        `₹${Number(
+          stats.revenue || 0
+        ).toLocaleString("en-IN")}`,
+
+      icon:
+        <IndianRupee size={24} />,
+
+      className: "cyan-card",
+    },
+
+    {
+      title:
+        "Active Bookings",
+
+      value:
+        stats.activeBookings ?? 0,
+
+      icon:
+        <CalendarCheck2 size={24} />,
+
+      className: "pink-card",
+    },
+
+    {
+      title:
+        "Completed Bookings",
+
+      value:
+        stats.completedBookings ?? 0,
+
+      icon:
+        <BadgeCheck size={24} />,
+
+      className: "teal-card",
+    },
+  ];
+
+
 
   const chartData = {
-    labels: ["Users", "Tutors", "Students", "Courses"],
+    labels: [
+      "Users",
+      "Tutors",
+      "Students",
+      "Courses",
+    ],
 
     datasets: [
       {
-        label: "Stats",
+        label:
+          "Platform Statistics",
+
         data: [
           stats.totalUsers || 0,
           stats.tutors || 0,
           stats.students || 0,
           stats.approvedCourses || 0,
         ],
+
         backgroundColor: [
-          "#0d6efd",
-          "#198754",
-          "#ffc107",
-          "#6f42c1",
+          "rgba(63, 81, 181, .80)",
+          "rgba(25, 135, 84, .80)",
+          "rgba(255, 193, 7, .80)",
+          "rgba(111, 66, 193, .80)",
         ],
+
+        borderRadius: 12,
+
+        borderSkipped: false,
       },
     ],
   };
 
-  // UI
+  const chartOptions = {
+    responsive: true,
+
+    maintainAspectRatio: false,
+
+    animation: {
+      duration: 1200,
+      easing: "easeOutQuart",
+    },
+
+    plugins: {
+      legend: {
+        display: false,
+      },
+
+      tooltip: {
+        backgroundColor:
+          "rgba(20,24,50,.95)",
+
+        padding: 12,
+
+        cornerRadius: 10,
+      },
+    },
+
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+
+      y: {
+        beginAtZero: true,
+
+        ticks: {
+          precision: 0,
+        },
+
+        grid: {
+          color:
+            "rgba(148,163,184,.12)",
+        },
+      },
+    },
+  };
 
   return (
     <div className="admin-layout">
 
+      {/* SIDEBAR */}
+
       <AdminSidebar
-        setActiveSection={setActiveSection}
+        activeSection={
+          activeSection
+        }
+        setActiveSection={
+          setActiveSection
+        }
       />
 
-      <div className="admin-content">
 
-        {/* DASHBOARD */}
+      {/* CONTENT */}
 
-        {activeSection === "dashboard" && (
-          <>
-            <h2 className="mb-4">
-              Dashboard
-            </h2>
+      <main className="admin-content">
 
-            <div className="row g-3">
+     
 
-              <Card
-                title="Users"
-                value={stats.totalUsers}
-              />
+        {activeSection ===
+          "dashboard" && (
 
-              <Card
-                title="Tutors"
-                value={stats.tutors}
-              />
+          <div className="admin-dashboard-page">
 
-              <Card
-                title="Students"
-                value={stats.students}
-              />
+            {/* HEADER */}
 
-              <Card
-                title="Courses"
-                value={stats.approvedCourses}
-              />
+            <div className="admin-page-header">
 
-            </div>
+              <div>
 
-            {/* EXTRA STATS */}
+                <p className="admin-overline">
+                  ADMIN PANEL
+                </p>
 
-            <div className="row g-3 mt-1">
+                <h2>
+                  Dashboard Overview
+                </h2>
 
-              <Card
-                title="Pending Courses"
-                value={stats.pendingCourses}
-              />
+                <p>
+                  Monitor LearnMate users,
+                  courses, bookings and
+                  platform activity.
+                </p>
 
-              <Card
-                title="Revenue"
-                value={`₹${stats.revenue || 0}`}
-              />
+              </div>
 
-              <Card
-                title="Active Bookings"
-                value={stats.activeBookings}
-              />
-
-              <Card
-                title="Completed Bookings"
-                value={stats.completedBookings}
-              />
+              <div className="dashboard-header-icon">
+                <BarChart3 size={30} />
+              </div>
 
             </div>
 
-            {/* CHART */}
 
-            <div className="card shadow mt-4 p-3">
+            {/* LOADING */}
 
-              <h5 className="mb-3">
-                Platform Statistics
-              </h5>
+            {loading ? (
 
-              <Bar data={chartData} />
+              <div className="admin-loading">
 
-            </div>
-          </>
+                <div
+                  className="spinner-border"
+                  role="status"
+                />
+
+                <span>
+                  Loading dashboard...
+                </span>
+
+              </div>
+
+            ) : (
+
+              <>
+                {/* CARDS */}
+
+                <div className="admin-stats-grid">
+
+                  {dashboardCards.map(
+                    (
+                      item,
+                      index
+                    ) => (
+
+                      <StatCard
+                        key={
+                          item.title
+                        }
+                        {...item}
+                        delay={
+                          index * 70
+                        }
+                      />
+
+                    )
+                  )}
+
+                </div>
+
+
+                {/* CHART */}
+
+                <div className="admin-chart-card">
+
+                  <div className="chart-heading">
+
+                    <div>
+
+                      <p>
+                        ANALYTICS
+                      </p>
+
+                      <h4>
+                        Platform Statistics
+                      </h4>
+
+                    </div>
+
+                    <BarChart3
+                      size={28}
+                    />
+
+                  </div>
+
+                  <div className="chart-container">
+
+                    <Bar
+                      data={
+                        chartData
+                      }
+                      options={
+                        chartOptions
+                      }
+                    />
+
+                  </div>
+
+                </div>
+
+              </>
+            )}
+
+          </div>
         )}
 
-        {/* COURSES */}
+        {activeSection ===
+          "courses" && (
 
-        {activeSection === "courses" && (
-          <>
-            <h2 className="mb-3">
-              Pending Courses
-            </h2>
+          <div className="admin-dashboard-page">
 
-            <div className="table-responsive">
+            {/* HEADER */}
 
-              <table className="table table-dark">
+            <div className="admin-page-header">
 
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
+              <div>
 
-                <tbody>
+                <p className="admin-overline">
+                  COURSE MANAGEMENT
+                </p>
 
-                  {courses.length === 0 ? (
+                <h2>
+                  Pending Courses
+                </h2>
+
+                <p>
+                  Review tutor course
+                  submissions and approve
+                  or reject them.
+                </p>
+
+              </div>
+
+              <div className="dashboard-header-icon">
+
+                <BookOpen
+                  size={29}
+                />
+
+              </div>
+
+            </div>
+
+
+            {/* TABLE */}
+
+            <div className="admin-table-card">
+
+              <div className="table-responsive">
+
+                <table className="admin-course-table">
+
+                  <thead>
+
                     <tr>
-                      <td
-                        colSpan="5"
-                        className="text-center"
-                      >
-                        No pending courses
-                      </td>
+                      <th>ID</th>
+                      <th>Course</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Status</th>
+                      <th>Action</th>
                     </tr>
-                  ) : (
-                    courses.map((course) => (
-                      <tr key={course.id}>
 
-                        <td>{course.id}</td>
+                  </thead>
 
-                        <td>{course.title}</td>
+                  <tbody>
 
-                        <td>{course.category}</td>
+                    {courses.length === 0 ? (
 
-                        <td>₹{course.price}</td>
+                      <tr>
 
-                        <td>
+                        <td
+                          colSpan="6"
+                          className="empty-table"
+                        >
 
-                          <button
-                            className="btn btn-success btn-sm me-2"
-                            onClick={() =>
-                              approveCourse(course.id)
-                            }
-                          >
-                            Approve
-                          </button>
+                          <BookOpen
+                            size={35}
+                          />
 
-                          <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() =>
-                              rejectCourse(course.id)
-                            }
-                          >
-                            Reject
-                          </button>
+                          <span>
+                            No pending courses
+                          </span>
 
                         </td>
 
                       </tr>
-                    ))
-                  )}
 
-                </tbody>
+                    ) : (
 
-              </table>
+                      courses.map(
+                        (course) => (
+
+                          <tr
+                            key={
+                              course.id
+                            }
+                          >
+
+                            <td>
+                              #{course.id}
+                            </td>
+
+                            <td>
+
+                              <div className="course-name">
+
+                                <div className="course-table-icon">
+
+                                  <BookOpen
+                                    size={17}
+                                  />
+
+                                </div>
+
+                                <span>
+                                  {
+                                    course.title
+                                  }
+                                </span>
+
+                              </div>
+
+                            </td>
+
+                            <td>
+
+                              <span className="category-badge">
+
+                                {
+                                  course.category ||
+                                  "General"
+                                }
+
+                              </span>
+
+                            </td>
+
+                            <td>
+
+                              ₹
+                              {
+                                course.price ??
+                                0
+                              }
+
+                            </td>
+
+                            <td>
+
+                              <span className="pending-badge">
+                                Pending
+                              </span>
+
+                            </td>
+
+                            <td>
+
+                              <div className="course-actions">
+
+                                <button
+                                  className="approve-btn"
+
+                                  onClick={() =>
+                                    approveCourse(
+                                      course.id
+                                    )
+                                  }
+                                >
+                                  Approve
+                                </button>
+
+                                <button
+                                  className="reject-btn"
+
+                                  onClick={() =>
+                                    rejectCourse(
+                                      course.id
+                                    )
+                                  }
+                                >
+                                  Reject
+                                </button>
+
+                              </div>
+
+                            </td>
+
+                          </tr>
+
+                        )
+                      )
+                    )}
+
+                  </tbody>
+
+                </table>
+
+              </div>
 
             </div>
-          </>
+
+          </div>
         )}
 
-      </div>
+      </main>
+
     </div>
   );
 }
 
 
-// CARD
 
-function Card({ title, value }) {
+function StatCard({
+  title,
+  value,
+  icon,
+  className,
+  delay,
+}) {
+
   return (
-    <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
 
-      <div className="card shadow-sm text-center h-100">
+    <div
+      className={`admin-stat-card ${className}`}
 
-        <div className="card-body">
+      style={{
+        animationDelay:
+          `${delay}ms`,
+      }}
+    >
 
-          <h6 className="text-muted">
-            {title}
-          </h6>
+      <div className="stat-card-icon">
+        {icon}
+      </div>
 
-          <h3 className="fw-bold">
-            {value ?? 0}
-          </h3>
+      <div className="stat-card-content">
 
-        </div>
+        <p>
+          {title}
+        </p>
+
+        <h3>
+          {value}
+        </h3>
 
       </div>
 

@@ -1,10 +1,29 @@
 import { useEffect, useState } from "react";
-import { fetchMyClasses } from "./authService";
+import { useNavigate } from "react-router-dom";
+
+import {
+  fetchMyClasses,
+} from "./authService";
+
+import {
+  Video,
+  CalendarDays,
+  Clock3,
+  RefreshCw,
+  BookOpen,
+} from "lucide-react";
 
 export default function StudentClasses() {
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const [classes, setClasses] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     load();
@@ -15,119 +34,373 @@ export default function StudentClasses() {
       setLoading(true);
       setError("");
 
-      const res = await fetchMyClasses();
+      const res =
+        await fetchMyClasses();
 
-      console.log("Student Classes:", res);
+      console.log(
+        "Student Classes:",
+        res
+      );
 
-      // Make sure response is always a valid array
-      if (Array.isArray(res)) {
-        setClasses(res.filter(Boolean));
-      } else {
-        setClasses([]);
-      }
+      setClasses(
+        Array.isArray(res)
+          ? res.filter(Boolean)
+          : []
+      );
+
     } catch (err) {
-      console.error("Error loading classes:", err);
+      console.error(
+        "Error loading classes:",
+        err
+      );
 
-      setError("Unable to load classes.");
+      setError(
+        "Unable to load classes."
+      );
+
       setClasses([]);
+
     } finally {
       setLoading(false);
     }
   };
 
-  // Safe date formatter
-  const formatDate = (date) => {
-    if (!date) {
+
+  const formatDate = (
+    value
+  ) => {
+    if (!value) {
       return "Not scheduled";
     }
 
-    const parsedDate = new Date(date);
+    const date =
+      new Date(value);
 
-    if (Number.isNaN(parsedDate.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
       return "Invalid date";
     }
 
-    return parsedDate.toLocaleString();
+    return date.toLocaleString();
   };
 
-  if (loading) {
-    return (
-      <div className="content-area">
-        <h3 className="mb-4">Live Classes</h3>
-        <p>Loading classes...</p>
-      </div>
+
+  const statusClass = (
+    status
+  ) => {
+    switch (
+      status?.toUpperCase()
+    ) {
+      case "LIVE":
+        return "student-class-live";
+
+      case "COMPLETED":
+        return "student-class-completed";
+
+      default:
+        return "student-class-scheduled";
+    }
+  };
+
+
+  const joinClass = (
+    classItem
+  ) => {
+    if (!classItem.roomId) {
+      return;
+    }
+
+    navigate(
+      `/student/live/${classItem.roomId}`
     );
-  }
+  };
+
 
   return (
-    <div className="content-area">
-      <h3 className="mb-4">Live Classes</h3>
+    <div className="student-dashboard-page">
+
+      {/* HEADER */}
+
+      <div className="student-dashboard-header">
+
+        <div>
+
+          <div className="student-dashboard-label">
+
+            <Video size={15} />
+
+            LIVE LEARNING
+
+          </div>
+
+          <h1>
+            Live Classes
+          </h1>
+
+          <p>
+            View your scheduled
+            sessions and join live
+            classes.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          className="student-refresh-btn"
+          onClick={load}
+          disabled={loading}
+        >
+
+          <RefreshCw
+            size={17}
+            className={
+              loading
+                ? "student-spin"
+                : ""
+            }
+          />
+
+          {loading
+            ? "Loading..."
+            : "Refresh"}
+
+        </button>
+
+      </div>
+
+
+      {/* ERROR */}
 
       {error && (
+
         <div className="alert alert-danger">
+
           {error}
+
         </div>
+
       )}
 
-      {classes.length === 0 ? (
-        <div className="alert alert-info">
-          No scheduled classes available.
+
+      {/* LOADING */}
+
+      {loading ? (
+
+        <div className="student-course-loading">
+
+          <div
+            className="spinner-border"
+            role="status"
+          />
+
+          <span>
+            Loading classes...
+          </span>
+
         </div>
+
+      ) : classes.length === 0 ? (
+
+        <div className="student-overview-card">
+
+          <div className="student-overview-icon">
+
+            <CalendarDays
+              size={24}
+            />
+
+          </div>
+
+          <div>
+
+            <h4>
+              No scheduled classes
+            </h4>
+
+            <p>
+              There are currently no
+              upcoming live classes
+              for your enrolled
+              courses.
+            </p>
+
+          </div>
+
+        </div>
+
       ) : (
-        <div className="row g-3">
-          {classes.map((classItem, index) => {
-            if (!classItem) {
-              return null;
-            }
 
-            return (
+        <div className="student-stats-grid">
+
+          {classes.map(
+            (
+              classItem,
+              index
+            ) => (
+
               <div
-                className="col-xl-4 col-lg-4 col-md-6 col-sm-12"
-                key={classItem.id ?? index}
+                key={
+                  classItem.id ??
+                  index
+                }
+                className={`
+                  student-stat-card
+                  student-live-class-card
+                  ${
+                    index % 3 === 0
+                      ? "student-stat-blue"
+                      : index % 3 === 1
+                      ? "student-stat-purple"
+                      : "student-stat-green"
+                  }
+                `}
+                style={{
+                  animationDelay:
+                    `${index * 80}ms`,
+                }}
               >
-                <div className="card shadow-sm h-100">
-                  <div className="card-body">
-                    <h5>
-                      {classItem.course?.title || "Course"}
-                    </h5>
 
-                    <p className="text-muted">
-                      Start: {formatDate(classItem.startTime)}
-                    </p>
+                {/* TOP */}
 
-                    <p className="text-muted">
-                      End: {formatDate(classItem.endTime)}
-                    </p>
+                <div className="student-class-top">
 
-                    <p>
-                      Status:{" "}
-                      <span className="fw-semibold">
-                        {classItem.status || "Unknown"}
-                      </span>
-                    </p>
+                  <div className="student-stat-icon">
 
-                    {classItem.roomId ? (
-                      <a
-                        href={`/tutor/live/${classItem.roomId}`}
-                        className="btn btn-success"
-                      >
-                        Join Class
-                      </a>
-                    ) : (
-                      <button
-                        className="btn btn-secondary"
-                        disabled
-                      >
-                        Room Not Available
-                      </button>
-                    )}
+                    <Video
+                      size={24}
+                    />
+
                   </div>
+
+                  <span
+                    className={`student-class-status ${statusClass(
+                      classItem.status
+                    )}`}
+                  >
+                    {classItem.status ||
+                      "SCHEDULED"}
+                  </span>
+
                 </div>
+
+
+                {/* COURSE */}
+
+                <div className="student-class-content">
+
+                  <div className="student-class-course">
+
+                    <BookOpen
+                      size={16}
+                    />
+
+                    <h3>
+                      {classItem.course
+                        ?.title ||
+                        "Course"}
+                    </h3>
+
+                  </div>
+
+
+                  <div className="student-class-time-row">
+
+                    <Clock3
+                      size={16}
+                    />
+
+                    <div>
+
+                      <span>
+                        Starts
+                      </span>
+
+                      <strong>
+                        {formatDate(
+                          classItem.startTime
+                        )}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  <div className="student-class-time-row">
+
+                    <Clock3
+                      size={16}
+                    />
+
+                    <div>
+
+                      <span>
+                        Ends
+                      </span>
+
+                      <strong>
+                        {formatDate(
+                          classItem.endTime
+                        )}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                {/* JOIN */}
+
+                <div className="student-class-footer">
+
+                  {classItem.roomId ? (
+
+                    <button
+                      type="button"
+                      className="student-enroll-btn"
+                      onClick={() =>
+                        joinClass(
+                          classItem
+                        )
+                      }
+                    >
+                      <Video
+                        size={16}
+                      />
+
+                      Join Class
+                    </button>
+
+                  ) : (
+
+                    <button
+                      type="button"
+                      className="student-disabled-btn"
+                      disabled
+                    >
+                      Room Not Available
+                    </button>
+
+                  )}
+
+                </div>
+
               </div>
-            );
-          })}
+
+            )
+          )}
+
         </div>
+
       )}
+
     </div>
   );
 }

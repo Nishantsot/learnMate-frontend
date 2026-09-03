@@ -1,0 +1,814 @@
+
+
+.tutor-classes-page {
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto;
+
+  padding: 4px;
+}
+
+
+
+
+.tutor-classes-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 25px;
+
+  padding: 25px 28px;
+
+  border-radius: 20px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1a1a40,
+      #3f51b5,
+      #283593
+    );
+
+  box-shadow:
+    0 15px 35px
+    rgba(40, 53, 147, 0.2);
+
+  animation:
+    tutorClassesHeader
+    0.65s ease forwards;
+}
+
+
+@keyframes tutorClassesHeader {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-18px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
+.tutor-classes-header h2 {
+  margin: 2px 0 7px;
+
+  font-size:
+    clamp(
+      1.7rem,
+      3vw,
+      2.4rem
+    );
+
+  font-weight: 800;
+}
+
+
+.tutor-classes-header
+> div
+> p:last-child {
+  margin: 0;
+
+  color: #e3e3ff;
+}
+
+
+.tutor-classes-overline {
+  margin: 0;
+
+  color: #c5cae9;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 2px;
+}
+
+
+.tutor-classes-header-icon {
+  width: 58px;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 16px;
+
+  background:
+    rgba(255,255,255,0.14);
+
+  border:
+    1px solid
+    rgba(255,255,255,0.18);
+}
+
+
+
+.schedule-class-card {
+  padding: 24px;
+
+  margin-bottom: 24px;
+
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    rgba(148,163,184,0.15);
+
+  box-shadow:
+    0 12px 35px
+    rgba(15,23,42,0.07);
+
+  animation:
+    tutorCardAppear
+    0.7s ease forwards;
+}
+
+
+@keyframes tutorCardAppear {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
+
+
+.schedule-card-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 22px;
+}
+
+
+.schedule-heading-icon {
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 12px;
+
+  color: #3f51b5;
+
+  background:
+    rgba(63,81,181,0.11);
+}
+
+
+.schedule-card-heading h4 {
+  margin: 0 0 3px;
+
+  color: #172033;
+
+  font-size: 18px;
+
+  font-weight: 750;
+}
+
+
+.schedule-card-heading p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 13px;
+}
+
+
+
+
+.schedule-form-grid {
+  display: grid;
+
+  grid-template-columns:
+    1.4fr 1fr 1fr auto;
+
+  gap: 15px;
+
+  align-items: end;
+}
+
+
+.schedule-field {
+  min-width: 0;
+}
+
+
+.schedule-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #475569;
+
+  font-size: 13px;
+
+  font-weight: 650;
+}
+
+
+.schedule-field select,
+.schedule-field input {
+  width: 100%;
+
+  min-height: 46px;
+
+  padding: 10px 12px;
+
+  border-radius: 11px;
+
+  color: #172033;
+
+  background: #ffffff;
+
+  border:
+    1px solid #dbe2ea;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.schedule-field select:focus,
+.schedule-field input:focus {
+  border-color: #3f51b5;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(63,81,181,0.12);
+}
+
+
+
+
+.schedule-class-btn {
+  min-height: 46px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 10px 20px;
+
+  border: none;
+
+  border-radius: 11px;
+
+  color: #ffffff;
+
+  font-weight: 700;
+
+  background:
+    linear-gradient(
+      135deg,
+      #3f51b5,
+      #283593
+    );
+
+  box-shadow:
+    0 8px 20px
+    rgba(63,81,181,0.24);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.schedule-class-btn:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 12px 28px
+    rgba(63,81,181,0.33);
+}
+
+
+
+
+.sessions-card {
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    rgba(148,163,184,0.15);
+
+  box-shadow:
+    0 12px 35px
+    rgba(15,23,42,0.07);
+
+  animation:
+    tutorCardAppear
+    0.8s ease forwards;
+}
+
+
+
+
+.sessions-card-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 22px 24px;
+
+  border-bottom:
+    1px solid #eef2f7;
+}
+
+
+.sessions-card-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 10px;
+
+  font-weight: 800;
+
+  letter-spacing: 1.6px;
+}
+
+
+.sessions-card-header h4 {
+  margin: 3px 0 0;
+
+  color: #172033;
+
+  font-size: 19px;
+
+  font-weight: 750;
+}
+
+
+.session-count {
+  min-width: 38px;
+  height: 38px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 11px;
+
+  color: #3f51b5;
+
+  font-weight: 800;
+
+  background:
+    rgba(63,81,181,0.1);
+}
+
+
+
+
+.tutor-session-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+
+.tutor-session-table thead {
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1a1a40,
+      #283593
+    );
+}
+
+
+.tutor-session-table th {
+  padding: 15px 17px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+.tutor-session-table td {
+  padding: 16px 17px;
+
+  color: #334155;
+
+  vertical-align: middle;
+
+  border-bottom:
+    1px solid #eef2f7;
+}
+
+
+.tutor-session-table
+tbody tr {
+  transition:
+    background 0.2s ease;
+}
+
+
+.tutor-session-table
+tbody tr:hover {
+  background: #f8f9ff;
+}
+
+
+
+.session-course {
+  min-width: 165px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+}
+
+
+.session-course-icon {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 9px;
+
+  color: #3f51b5;
+
+  background:
+    rgba(63,81,181,0.10);
+}
+
+
+.session-course span {
+  font-weight: 650;
+}
+
+
+
+
+.session-time {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  min-width: 180px;
+}
+
+
+.session-time svg {
+  color: #64748b;
+}
+
+
+
+.room-code {
+  display: inline-block;
+
+  max-width: 150px;
+
+  padding: 6px 9px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  border-radius: 8px;
+
+  color: #475569;
+
+  font-family:
+    monospace;
+
+  font-size: 11px;
+
+  background: #f1f5f9;
+}
+
+.session-status {
+  display: inline-flex;
+
+  padding: 6px 10px;
+
+  border-radius: 30px;
+
+  font-size: 11px;
+
+  font-weight: 750;
+}
+
+
+.session-scheduled {
+  color: #b45309;
+
+  background: #fff7ed;
+}
+
+
+.session-live {
+  color: #047857;
+
+  background: #ecfdf5;
+}
+
+
+.session-completed {
+  color: #475569;
+
+  background: #f1f5f9;
+}
+
+
+.session-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-width: max-content;
+}
+
+
+.session-start-btn,
+.session-join-btn,
+.session-complete-btn {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  border: none;
+
+  padding: 7px 10px;
+
+  border-radius: 8px;
+
+  color: #ffffff;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.session-start-btn {
+  background: #198754;
+}
+
+
+.session-join-btn {
+  background: #3f51b5;
+}
+
+
+.session-complete-btn {
+  background: #dc3545;
+}
+
+
+.session-start-btn:hover,
+.session-join-btn:hover,
+.session-complete-btn:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 6px 15px
+    rgba(0,0,0,0.14);
+}
+
+
+.completed-label {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #64748b;
+
+  font-size: 12px;
+
+  font-weight: 650;
+}
+
+
+.session-empty {
+  height: 220px;
+
+  text-align: center;
+
+  color:
+    #94a3b8 !important;
+}
+
+
+.session-empty svg {
+  display: block;
+
+  margin:
+    0 auto 10px;
+}
+
+
+.session-empty span {
+  display: block;
+}
+
+
+
+.tutor-classes-loading {
+  min-height: 250px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 12px;
+
+  color: #3f51b5;
+}
+
+
+
+@media (max-width: 1100px) {
+
+  .schedule-form-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .schedule-submit-wrap {
+    grid-column:
+      span 2;
+  }
+
+  .schedule-class-btn {
+    width: 100%;
+  }
+
+}
+
+
+
+@media (max-width: 767.98px) {
+
+  .tutor-classes-page {
+    padding: 0;
+  }
+
+  .tutor-classes-header {
+    padding: 20px;
+
+    border-radius: 17px;
+  }
+
+  .tutor-classes-header-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .schedule-class-card {
+    padding: 19px;
+  }
+
+  .schedule-form-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .schedule-submit-wrap {
+    grid-column:
+      auto;
+  }
+
+  .sessions-card-header {
+    padding: 18px;
+  }
+
+}
+
+
+
+
+@media (max-width: 480px) {
+
+  .tutor-classes-header {
+    padding: 18px;
+  }
+
+  .tutor-classes-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .tutor-classes-header
+  > div
+  > p:last-child {
+    font-size: 13px;
+  }
+
+}
+
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
+  .tutor-classes-header,
+  .schedule-class-card,
+  .sessions-card {
+    animation: none !important;
+  }
+
+}

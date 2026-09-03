@@ -1,89 +1,281 @@
-import { useEffect,useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import { fetchStudentDashboard } from "./authService";
+import {
+  BookOpen,
+  GraduationCap,
+  Video,
+  Sparkles,
+  RefreshCw,
+} from "lucide-react";
 
-export default function StudentDashboard(){
+import {
+  fetchStudentDashboard,
+} from "./authService";
 
-const [data,setData]=useState({});
-
-useEffect(()=>{
-
-load();
-
-},[]);
-
-
-const load = async()=>{
-
-const res = await fetchStudentDashboard();
-
-setData(res);
-
-};
+import "./StudentDashboard.css";
 
 
-return(
+export default function StudentDashboard() {
 
-<div className="content-area">
+  const [data, setData] = useState({});
 
-<h3 className="mb-4">Dashboard</h3>
+  const [loading, setLoading] =
+    useState(true);
 
-<div className="row g-3">
-
-<div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-
-<div className="card shadow-sm h-100">
-
-<div className="card-body text-center">
-
-<h6 className="text-muted">Total Courses</h6>
-
-<h2 className="fw-bold">{data.totalCourses || 0}</h2>
-
-</div>
-
-</div>
-
-</div>
+  const [error, setError] =
+    useState("");
 
 
-<div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-
-<div className="card shadow-sm h-100">
-
-<div className="card-body text-center">
-
-<h6 className="text-muted">My Courses</h6>
-
-<h2 className="fw-bold">{data.myCourses || 0}</h2>
-
-</div>
-
-</div>
-
-</div>
+  useEffect(() => {
+    load();
+  }, []);
 
 
-<div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+  const load = async () => {
 
-<div className="card shadow-sm h-100">
+    try {
 
-<div className="card-body text-center">
+      setLoading(true);
+      setError("");
 
-<h6 className="text-muted">Classes</h6>
+      const res =
+        await fetchStudentDashboard();
 
-<h2 className="fw-bold">{data.classes || 0}</h2>
+      console.log(
+        "Student Dashboard:",
+        res
+      );
 
-</div>
+      setData(res || {});
 
-</div>
+    } catch (err) {
 
-</div>
+      console.error(
+        "Student dashboard error:",
+        err
+      );
 
-</div>
+      setError(
+        "Failed to load dashboard"
+      );
 
-</div>
+    } finally {
 
-);
+      setLoading(false);
+    }
+  };
 
+
+  const cards = [
+
+    {
+      title: "My Courses",
+
+      value:
+        data.totalCourses ?? 0,
+
+      icon:
+        <GraduationCap size={25} />,
+
+      className:
+        "student-stat-blue",
+    },
+
+    {
+      title: "Upcoming Classes",
+
+      value:
+        data.upcomingClasses ?? 0,
+
+      icon:
+        <Video size={25} />,
+
+      className:
+        "student-stat-purple",
+    },
+
+    {
+      title: "Learning Status",
+
+      value:
+        data.totalCourses > 0
+          ? "Active"
+          : "Start Learning",
+
+      icon:
+        <BookOpen size={25} />,
+
+      className:
+        "student-stat-green",
+    },
+
+  ];
+
+
+  return (
+
+    <div className="student-dashboard-page">
+
+
+    
+      <div className="student-dashboard-header">
+
+        <div>
+
+          <div className="student-dashboard-label">
+
+            <Sparkles size={15} />
+
+            STUDENT DASHBOARD
+
+          </div>
+
+
+          <h1>
+            Welcome Back 👋
+          </h1>
+
+
+          <p>
+            Track your courses,
+            upcoming classes and
+            continue your learning
+            journey.
+          </p>
+
+        </div>
+
+
+        <button
+          className="student-refresh-btn"
+          onClick={load}
+          disabled={loading}
+        >
+
+          <RefreshCw
+            size={17}
+            className={
+              loading
+                ? "student-spin"
+                : ""
+            }
+          />
+
+          Refresh
+
+        </button>
+
+      </div>
+
+
+ 
+
+      {error && (
+
+        <div className="alert alert-danger">
+
+          {error}
+
+        </div>
+
+      )}
+
+
+
+
+      <div className="student-stats-grid">
+
+        {cards.map(
+          (card, index) => (
+
+            <div
+              className={`student-stat-card ${card.className}`}
+              key={card.title}
+
+              style={{
+                animationDelay:
+                  `${index * 100}ms`,
+              }}
+            >
+
+              <div className="student-stat-top">
+
+                <div className="student-stat-icon">
+
+                  {card.icon}
+
+                </div>
+
+              </div>
+
+
+              <div className="student-stat-content">
+
+                <span>
+                  {card.title}
+                </span>
+
+
+                <h2>
+
+                  {loading
+                    ? "..."
+                    : card.value}
+
+                </h2>
+
+              </div>
+
+            </div>
+
+          )
+        )}
+
+      </div>
+
+
+     
+
+      <div className="student-overview-card">
+
+        <div className="student-overview-icon">
+
+          <BookOpen size={25} />
+
+        </div>
+
+
+        <div>
+
+          <h4>
+            Your Learning Overview
+          </h4>
+
+          <p>
+            You are enrolled in{" "}
+
+            <strong>
+              {data.totalCourses ?? 0}
+            </strong>
+
+            {" "}course(s) and have{" "}
+
+            <strong>
+              {data.upcomingClasses ?? 0}
+            </strong>
+
+            {" "}upcoming live
+            class(es).
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
 }
+

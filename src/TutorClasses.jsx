@@ -5,421 +5,647 @@ import {
   getUpcomingTutorClasses,
   completeTutorClass,
   getTutorCourses,
-    startTutorClass 
+  startTutorClass,
 } from "./authService";
+
+import {
+  Video,
+  CalendarPlus,
+  Play,
+  CheckCircle2,
+  Clock3,
+  BookOpen,
+} from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 
+import "./TutorClasses.css";
 
 export default function TutorClasses() {
-
   const navigate = useNavigate();
 
   const [sessions, setSessions] = useState([]);
-
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState({
     courseId: "",
     startTime: "",
-    endTime: ""
+    endTime: "",
   });
 
-
-
   useEffect(() => {
-
-    loadSessions();
-    loadCourses();
-
+    loadData();
   }, []);
 
-
-
-  // LOAD SESSIONS
-  const loadSessions = async () => {
-
+  const loadData = async () => {
     try {
+      setLoading(true);
 
-      const data = await getUpcomingTutorClasses();
+      const [sessionData, courseData] =
+        await Promise.all([
+          getUpcomingTutorClasses(),
+          getTutorCourses(),
+        ]);
 
-      console.log("Sessions:", data);
-
-      setSessions(data);
-
+      setSessions(sessionData || []);
+      setCourses(courseData || []);
+    } catch (err) {
+      console.error("Tutor class load error:", err);
+    } finally {
+      setLoading(false);
     }
-    catch (err) {
-
-      console.error(err);
-
-    }
-
   };
 
-
-
-  // LOAD COURSES
-  const loadCourses = async () => {
-
-    try {
-
-      const data = await getTutorCourses();
-
-      setCourses(data);
-
-    }
-    catch (err) {
-
-      console.error(err);
-
-    }
-
-  };
-
-
-
-  // SCHEDULE CLASS
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
+    if (
+      !form.courseId ||
+      !form.startTime ||
+      !form.endTime
+    ) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    if (
+      new Date(form.endTime) <=
+      new Date(form.startTime)
+    ) {
+      alert(
+        "End time must be after start time"
+      );
+      return;
+    }
+
     try {
-
       const payload = {
-
         courseId: Number(form.courseId),
-
-        startTime: form.startTime + ":00",
-
-        endTime: form.endTime + ":00"
-
+        startTime: `${form.startTime}:00`,
+        endTime: `${form.endTime}:00`,
       };
 
-      console.log("Scheduling:", payload);
-
       await scheduleTutorClass(payload);
-
-      alert("Class Scheduled Successfully ✅");
 
       setForm({
         courseId: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
       });
 
-      loadSessions();
+      await loadData();
 
+      alert(
+        "Class scheduled successfully"
+      );
+    } catch (err) {
+      console.error(
+        "Schedule error:",
+        err
+      );
+
+      alert(
+        "Failed to schedule class"
+      );
     }
-    catch (err) {
-
-      console.error(err);
-
-      alert("Failed to schedule class");
-
-    }
-
   };
 
-
-
-  // COMPLETE CLASS
   const markComplete = async (id) => {
+    try {
+      await completeTutorClass(id);
 
-    await completeTutorClass(id);
+      await loadData();
+    } catch (err) {
+      console.error(
+        "Complete class error:",
+        err
+      );
 
-    loadSessions();
-
+      alert(
+        "Failed to complete class"
+      );
+    }
   };
 
+  const startClass = async (
+    session
+  ) => {
+    try {
+      await startTutorClass(
+        session.id
+      );
 
+      await loadData();
+
+      navigate(
+        `/tutor/live/${session.roomId}`
+      );
+    } catch (err) {
+      console.error(
+        "Start class error:",
+        err
+      );
+
+      alert(
+        "Failed to start class"
+      );
+    }
+  };
+
+  const statusClass = (
+    status
+  ) => {
+    switch (
+      status?.toUpperCase()
+    ) {
+      case "LIVE":
+        return "session-live";
+
+      case "COMPLETED":
+        return "session-completed";
+
+      default:
+        return "session-scheduled";
+    }
+  };
 
   return (
-
-    <div className="container-fluid py-4 px-4">
-
+    <div className="tutor-classes-page">
 
       {/* HEADER */}
 
-      <h2 className="fw-bold text-white mb-4">
+      <div className="tutor-classes-header">
 
-        🎥 Live Classes Management
+        <div>
+          <p className="tutor-classes-overline">
+            LIVE LEARNING
+          </p>
 
-      </h2>
+          <h2>
+            Live Classes Management
+          </h2>
+
+          <p>
+            Schedule, start and manage
+            your LearnMate live sessions.
+          </p>
+        </div>
+
+        <div className="tutor-classes-header-icon">
+          <Video size={31} />
+        </div>
+
+      </div>
 
 
+      {/* SCHEDULE CARD */}
 
-      {/* SCHEDULE FORM */}
+      <div className="schedule-class-card">
 
-      <div className="card shadow-lg mb-4">
+        <div className="schedule-card-heading">
 
-        <div className="card-body">
+          <div className="schedule-heading-icon">
+            <CalendarPlus
+              size={22}
+            />
+          </div>
 
-          <h5 className="mb-3">Schedule New Class</h5>
+          <div>
+            <h4>
+              Schedule New Class
+            </h4>
 
-          <form onSubmit={handleSubmit}>
+            <p>
+              Select a course and
+              choose class timing.
+            </p>
+          </div>
 
-            <div className="row g-3">
+        </div>
 
 
-              <div className="col-md-4">
+        <form
+          onSubmit={
+            handleSubmit
+          }
+        >
 
-                <select
-                  className="form-select"
-                  required
-                  value={form.courseId}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      courseId: e.target.value
-                    })
-                  }
-                >
+          <div className="schedule-form-grid">
 
-                  <option value="">
+            {/* COURSE */}
 
-                    Select Course
+            <div className="schedule-field">
 
-                  </option>
+              <label>
+                Course
+              </label>
 
-                  {courses.map((c) => (
+              <select
+                required
+                value={
+                  form.courseId
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    courseId:
+                      e.target.value,
+                  })
+                }
+              >
 
-                    <option key={c.id} value={c.id}>
+                <option value="">
+                  Select Course
+                </option>
 
-                      {c.title}
+                {courses.map(
+                  (course) => (
 
+                    <option
+                      key={
+                        course.id
+                      }
+                      value={
+                        course.id
+                      }
+                    >
+                      {
+                        course.title
+                      }
                     </option>
 
-                  ))}
+                  )
+                )}
 
-                </select>
-
-              </div>
-
-
-
-              <div className="col-md-3">
-
-                <input
-                  type="datetime-local"
-                  className="form-control"
-                  required
-                  value={form.startTime}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      startTime: e.target.value
-                    })
-                  }
-                />
-
-              </div>
-
-
-
-              <div className="col-md-3">
-
-                <input
-                  type="datetime-local"
-                  className="form-control"
-                  required
-                  value={form.endTime}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      endTime: e.target.value
-                    })
-                  }
-                />
-
-              </div>
-
-
-
-              <div className="col-md-2">
-
-                <button className="btn btn-primary w-100">
-
-                  Schedule
-
-                </button>
-
-              </div>
-
+              </select>
 
             </div>
 
-          </form>
 
-        </div>
+            {/* START */}
+
+            <div className="schedule-field">
+
+              <label>
+                Start Time
+              </label>
+
+              <input
+                type="datetime-local"
+                required
+                value={
+                  form.startTime
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    startTime:
+                      e.target.value,
+                  })
+                }
+              />
+
+            </div>
+
+
+            {/* END */}
+
+            <div className="schedule-field">
+
+              <label>
+                End Time
+              </label>
+
+              <input
+                type="datetime-local"
+                required
+                value={
+                  form.endTime
+                }
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    endTime:
+                      e.target.value,
+                  })
+                }
+              />
+
+            </div>
+
+
+            {/* BUTTON */}
+
+            <div className="schedule-submit-wrap">
+
+              <button
+                type="submit"
+                className="schedule-class-btn"
+              >
+                <CalendarPlus
+                  size={18}
+                />
+
+                Schedule
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
 
       </div>
 
 
+      {/* SESSION CARD */}
 
-      {/* SESSION TABLE */}
+      <div className="sessions-card">
 
-      <div className="card shadow-lg">
+        <div className="sessions-card-header">
 
-        <div className="card-body">
+          <div>
 
-          <h5>All Sessions</h5>
+            <p>
+              CLASS SESSIONS
+            </p>
 
+            <h4>
+              Upcoming Sessions
+            </h4>
 
-          <table className="table">
+          </div>
 
-            <thead>
+          <div className="session-count">
+            {sessions.length}
+          </div>
 
-              <tr>
-
-                <th>Course</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Room</th>
-                <th>Status</th>
-                <th>Action</th>
-
-              </tr>
-
-            </thead>
+        </div>
 
 
-            <tbody>
+        {loading ? (
 
+          <div className="tutor-classes-loading">
 
-              {sessions.length === 0 && (
+            <div
+              className="spinner-border"
+              role="status"
+            />
 
+            <span>
+              Loading sessions...
+            </span>
+
+          </div>
+
+        ) : (
+
+          <div className="table-responsive">
+
+            <table className="tutor-session-table">
+
+              <thead>
                 <tr>
-
-                  <td colSpan="6">
-
-                    No Sessions Found
-
-                  </td>
-
+                  <th>Course</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Room</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-
-              )}
-
+              </thead>
 
 
-              {sessions.map((s) => (
+              <tbody>
 
-                <tr key={s.id}>
+                {sessions.length ===
+                0 ? (
 
-                  <td>{s.course?.title}</td>
+                  <tr>
 
-                  <td>
+                    <td
+                      colSpan="6"
+                      className="session-empty"
+                    >
 
-                    {new Date(s.startTime).toLocaleString()}
+                      <Video
+                        size={34}
+                      />
 
-                  </td>
+                      <span>
+                        No scheduled sessions found
+                      </span>
 
-                  <td>
+                    </td>
 
-                    {new Date(s.endTime).toLocaleString()}
+                  </tr>
 
-                  </td>
+                ) : (
 
-                  <td>{s.roomId}</td>
+                  sessions.map(
+                    (session) => (
 
-                  <td>{s.status}</td>
+                      <tr
+                        key={
+                          session.id
+                        }
+                      >
 
-<td>
+                        {/* COURSE */}
 
-{/* START BUTTON */}
+                        <td>
 
-{s.status === "SCHEDULED" && (
+                          <div className="session-course">
 
-<button
-className="btn btn-success btn-sm me-2"
-onClick={async () => {
+                            <div className="session-course-icon">
 
-await startTutorClass(s.id);
+                              <BookOpen
+                                size={17}
+                              />
 
-loadSessions();
+                            </div>
 
-navigate(`/tutor/live/${s.roomId}`);
+                            <span>
+                              {
+                                session.course
+                                  ?.title ||
+                                "Course"
+                              }
+                            </span>
 
-}}
->
+                          </div>
 
-Start Class
-
-</button>
-
-)}
-
-
-
-{/* JOIN BUTTON */}
-
-{s.status === "LIVE" && (
-
-<button
-className="btn btn-primary btn-sm me-2"
-onClick={() =>
-navigate(`/tutor/live/${s.roomId}`)
-}
->
-
-Join Live
-
-</button>
-
-)}
+                        </td>
 
 
+                        {/* START */}
 
-{/* COMPLETE BUTTON */}
+                        <td>
 
-{s.status !== "COMPLETED" && (
+                          <div className="session-time">
 
-<button
-className="btn btn-danger btn-sm"
-onClick={() => markComplete(s.id)}
->
+                            <Clock3
+                              size={15}
+                            />
 
-Complete
+                            <span>
+                              {new Date(
+                                session.startTime
+                              ).toLocaleString()}
+                            </span>
 
-</button>
+                          </div>
 
-)}
-
-
-
-{/* COMPLETED TEXT */}
-
-{s.status === "COMPLETED" && (
-
-<span className="text-muted">
-
-Completed
-
-</span>
-
-)}
+                        </td>
 
 
-</td>
+                        {/* END */}
+
+                        <td>
+
+                          {new Date(
+                            session.endTime
+                          ).toLocaleString()}
+
+                        </td>
 
 
-                </tr>
+                        {/* ROOM */}
 
-              ))}
+                        <td>
+
+                          <span className="room-code">
+                            {
+                              session.roomId
+                            }
+                          </span>
+
+                        </td>
 
 
-            </tbody>
+                        {/* STATUS */}
 
-          </table>
+                        <td>
+
+                          <span
+                            className={`session-status ${statusClass(
+                              session.status
+                            )}`}
+                          >
+                            {
+                              session.status
+                            }
+                          </span>
+
+                        </td>
 
 
-        </div>
+                        {/* ACTION */}
+
+                        <td>
+
+                          <div className="session-actions">
+
+                            {session.status ===
+                              "SCHEDULED" && (
+
+                              <button
+                                className="session-start-btn"
+                                onClick={() =>
+                                  startClass(
+                                    session
+                                  )
+                                }
+                              >
+                                <Play
+                                  size={15}
+                                />
+
+                                Start
+                              </button>
+
+                            )}
+
+
+                            {session.status ===
+                              "LIVE" && (
+
+                              <button
+                                className="session-join-btn"
+                                onClick={() =>
+                                  navigate(
+                                    `/tutor/live/${session.roomId}`
+                                  )
+                                }
+                              >
+                                <Video
+                                  size={15}
+                                />
+
+                                Join
+                              </button>
+
+                            )}
+
+
+                            {session.status !==
+                              "COMPLETED" && (
+
+                              <button
+                                className="session-complete-btn"
+                                onClick={() =>
+                                  markComplete(
+                                    session.id
+                                  )
+                                }
+                              >
+                                <CheckCircle2
+                                  size={15}
+                                />
+
+                                Complete
+                              </button>
+
+                            )}
+
+
+                            {session.status ===
+                              "COMPLETED" && (
+
+                              <span className="completed-label">
+
+                                <CheckCircle2
+                                  size={16}
+                                />
+
+                                Completed
+
+                              </span>
+
+                            )}
+
+                          </div>
+
+                        </td>
+
+                      </tr>
+
+                    )
+                  )
+
+                )}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        )}
 
       </div>
-
 
     </div>
-
   );
-
 }

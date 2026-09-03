@@ -1,135 +1,341 @@
-import { useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
+import React, {
+  useState,
+} from "react";
+
 import {
-  Menu,
-  X,
   LayoutDashboard,
   BookOpen,
   GraduationCap,
   Video,
   Bot,
   LogOut,
+  Menu,
+  X,
+  UserRound,
 } from "lucide-react";
 
-export default function StudentSidebar() {
-  const navigate = useNavigate();
+import {
+  useNavigate,
+  NavLink,
+} from "react-router-dom";
 
-  const [showSidebar, setShowSidebar] = useState(false);
+
+export default function StudentSidebar() {
+
+  const [
+    showSidebar,
+    setShowSidebar,
+  ] = useState(false);
+
+  const navigate =
+    useNavigate();
+
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("role");
 
-    navigate("/login");
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "role"
+    );
+
+    localStorage.removeItem(
+      "userName"
+    );
+
+    navigate(
+      "/login"
+    );
   };
+
 
   return (
     <>
-      {/* MOBILE HEADER */}
+
+
       <div className="mobile-header d-md-none">
-        <h5>🎓 Student Panel</h5>
 
-        <Menu
-          className="burger-icon"
-          onClick={() => setShowSidebar(true)}
-        />
-      </div>
+        <div className="mobile-admin-brand">
 
-      {/* SIDEBAR */}
-      <div
-        className={`admin-sidebar ${
-          showSidebar ? "open" : ""
-        }`}
-      >
-        {/* CLOSE BUTTON */}
-        <div className="d-md-none text-end mb-3">
-          <X
-            className="close-icon"
-            onClick={() => setShowSidebar(false)}
-          />
+          <div className="mobile-admin-icon">
+
+            <UserRound
+              size={20}
+            />
+
+          </div>
+
+          <span>
+            LearnMate Student
+          </span>
+
         </div>
 
-        <h4 className="text-info mb-4">
-          🎓 Student Panel
-        </h4>
-
-        <SidebarLink
-          to="/student"
-          text="Dashboard"
-          icon={<LayoutDashboard size={19} />}
-          close={() => setShowSidebar(false)}
-        />
-
-        <SidebarLink
-          to="/student/courses"
-          text="Browse Courses"
-          icon={<BookOpen size={19} />}
-          close={() => setShowSidebar(false)}
-        />
-
-        <SidebarLink
-          to="/student/my-courses"
-          text="My Courses"
-          icon={<GraduationCap size={19} />}
-          close={() => setShowSidebar(false)}
-        />
-
-        <SidebarLink
-          to="/student/classes"
-          text="Live Classes"
-          icon={<Video size={19} />}
-          close={() => setShowSidebar(false)}
-        />
-
-        {/* AI TUTOR */}
-        <SidebarLink
-          to="/student/ai-tutor"
-          text="AI Tutor"
-          icon={<Bot size={19} />}
-          close={() => setShowSidebar(false)}
-        />
 
         <button
-          className="btn btn-danger mt-auto d-flex align-items-center justify-content-center gap-2"
-          onClick={logout}
+          type="button"
+          className="mobile-menu-btn"
+
+          onClick={() =>
+            setShowSidebar(
+              true
+            )
+          }
         >
-          <LogOut size={18} />
-          Logout
+
+          <Menu size={24} />
+
         </button>
+
       </div>
 
+
+     
+
+      <aside
+        className={`admin-sidebar ${
+          showSidebar
+            ? "open"
+            : ""
+        }`}
+      >
+
+        {/* MOBILE CLOSE */}
+
+        <div className="admin-sidebar-mobile-top d-md-none">
+
+          <span>
+            Student Menu
+          </span>
+
+          <button
+            type="button"
+            className="sidebar-close-btn"
+
+            onClick={() =>
+              setShowSidebar(
+                false
+              )
+            }
+          >
+
+            <X size={22} />
+
+          </button>
+
+        </div>
+
+
+        {/* BRAND */}
+
+        <div className="admin-sidebar-brand">
+
+          <div className="admin-brand-icon">
+
+            <UserRound
+              size={25}
+            />
+
+          </div>
+
+
+          <div>
+
+            <h4>
+              LearnMate
+            </h4>
+
+            <span>
+              Student Panel
+            </span>
+
+          </div>
+
+        </div>
+
+
+        {/* NAVIGATION */}
+
+        <nav className="admin-sidebar-nav">
+
+
+          <SidebarLink
+            to="/student"
+            end
+            icon={
+              <LayoutDashboard
+                size={19}
+              />
+            }
+            text="Dashboard"
+            close={() =>
+              setShowSidebar(
+                false
+              )
+            }
+          />
+
+
+          <SidebarLink
+            to="/student/courses"
+            icon={
+              <BookOpen
+                size={19}
+              />
+            }
+            text="Browse Courses"
+            close={() =>
+              setShowSidebar(
+                false
+              )
+            }
+          />
+
+
+          <SidebarLink
+            to="/student/my-courses"
+            icon={
+              <GraduationCap
+                size={19}
+              />
+            }
+            text="My Courses"
+            close={() =>
+              setShowSidebar(
+                false
+              )
+            }
+          />
+
+
+          <SidebarLink
+            to="/student/classes"
+            icon={
+              <Video
+                size={19}
+              />
+            }
+            text="Live Classes"
+            close={() =>
+              setShowSidebar(
+                false
+              )
+            }
+          />
+
+
+          <SidebarLink
+            to="/student/ai-tutor"
+            icon={
+              <Bot
+                size={19}
+              />
+            }
+            text="AI Tutor"
+            close={() =>
+              setShowSidebar(
+                false
+              )
+            }
+          />
+
+
+        </nav>
+
+
+        {/* LOGOUT */}
+
+        <div className="admin-sidebar-bottom">
+
+          <button
+            type="button"
+            className="sidebar-logout-btn"
+
+            onClick={
+              logout
+            }
+          >
+
+            <LogOut
+              size={18}
+            />
+
+            <span>
+              Logout
+            </span>
+
+          </button>
+
+        </div>
+
+      </aside>
+
+
       {/* OVERLAY */}
+
       {showSidebar && (
+
         <div
           className="sidebar-overlay"
-          onClick={() => setShowSidebar(false)}
+
+          onClick={() =>
+            setShowSidebar(
+              false
+            )
+          }
         />
+
       )}
+
     </>
   );
 }
 
+
+
+
+
 function SidebarLink({
   to,
-  text,
   icon,
+  text,
   close,
+  end = false,
 }) {
+
   return (
+
     <NavLink
       to={to}
-      end={to === "/student"}
+
+      end={end}
+
       onClick={close}
-      className={({ isActive }) =>
-        `sidebar-link-premium d-flex align-items-center gap-2 p-2 rounded mb-2 ${
-          isActive ? "active" : ""
+
+      className={({
+        isActive,
+      }) =>
+        `sidebar-link-premium ${
+          isActive
+            ? "active"
+            : ""
         }`
       }
     >
-      {icon}
 
-      <span>{text}</span>
+      <div className="sidebar-menu-icon">
+
+        {icon}
+
+      </div>
+
+      <span>
+        {text}
+      </span>
+
     </NavLink>
+
   );
 }

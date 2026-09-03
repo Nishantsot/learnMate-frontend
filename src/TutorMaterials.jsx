@@ -1,360 +1,621 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
 
 import {
-
-addTutorMaterial,
-getTutorMaterials,
-getTutorCourses
-
+  addTutorMaterial,
+  getTutorMaterials,
+  getTutorCourses,
 } from "./authService";
+
+import {
+  BookOpen,
+  FileText,
+  Link as LinkIcon,
+  PlusCircle,
+  ExternalLink,
+  Layers3,
+} from "lucide-react";
+
+import "./TutorCourses.css";
 
 
 export default function TutorMaterials() {
 
+  const [courses, setCourses] =
+    useState([]);
 
-const [courses, setCourses] = useState([]);
+  const [materials, setMaterials] =
+    useState([]);
 
-const [materials, setMaterials] = useState([]);
+  const [loading, setLoading] =
+    useState(false);
 
+  const [submitting, setSubmitting] =
+    useState(false);
 
-const [form, setForm] = useState({
+  const [form, setForm] =
+    useState({
+      courseId: "",
+      title: "",
+      url: "",
+    });
 
-courseId:"",
-title:"",
-url:""
 
-});
+  useEffect(() => {
+    loadCourses();
+  }, []);
 
 
+  const loadCourses = async () => {
+    try {
 
-useEffect(()=>{
+      const data =
+        await getTutorCourses();
 
-loadCourses();
+      setCourses(
+        data || []
+      );
 
-},[]);
+    } catch (error) {
 
+      console.error(
+        "Courses load error:",
+        error
+      );
 
+      setCourses([]);
+    }
+  };
 
-const loadCourses = async ()=>{
 
-const data = await getTutorCourses();
+  const loadMaterials = async (
+    courseId
+  ) => {
 
-setCourses(data);
+    if (!courseId) {
 
-};
+      setMaterials([]);
 
+      return;
+    }
 
+    try {
 
-const loadMaterials = async(courseId)=>{
+      setLoading(true);
 
-if(!courseId) return;
+      const data =
+        await getTutorMaterials(
+          courseId
+        );
 
-const data = await getTutorMaterials(courseId);
+      setMaterials(
+        data || []
+      );
 
-setMaterials(data);
+    } catch (error) {
 
-};
+      console.error(
+        "Materials load error:",
+        error
+      );
 
+      setMaterials([]);
 
+    } finally {
 
-const handleSubmit = async(e)=>{
+      setLoading(false);
+    }
+  };
 
-e.preventDefault();
 
-await addTutorMaterial(
+  const handleCourseChange = (
+    e
+  ) => {
 
-form.courseId,
-form.title,
-form.url
+    const courseId =
+      e.target.value;
 
-);
+    setForm({
+      ...form,
+      courseId,
+    });
 
-setForm({
+    loadMaterials(
+      courseId
+    );
+  };
 
-...form,
-title:"",
-url:""
 
-});
+  const handleSubmit = async (
+    e
+  ) => {
 
-loadMaterials(form.courseId);
+    e.preventDefault();
 
-};
+    if (
+      !form.courseId ||
+      !form.title.trim() ||
+      !form.url.trim()
+    ) {
 
+      alert(
+        "Please fill all fields"
+      );
 
+      return;
+    }
 
-return (
+    try {
 
+      setSubmitting(true);
 
-<div className="container-fluid py-4 px-4">
+      await addTutorMaterial(
+        form.courseId,
+        form.title.trim(),
+        form.url.trim()
+      );
 
+      setForm({
+        ...form,
+        title: "",
+        url: "",
+      });
 
+      await loadMaterials(
+        form.courseId
+      );
 
-{/* HEADER */}
+    } catch (error) {
 
+      console.error(
+        "Add material error:",
+        error
+      );
 
-<h2 className="fw-bold text-white">
+      alert(
+        "Failed to add material"
+      );
 
- Course Materials
+    } finally {
 
-</h2>
+      setSubmitting(false);
+    }
+  };
 
 
+  const selectedCourse =
+    courses.find(
+      (course) =>
+        String(course.id) ===
+        String(form.courseId)
+    );
 
-{/* FORM CARD */}
 
+  return (
 
-<div className="card shadow-lg border-0 rounded-4 mb-5">
+    <div className="tutor-courses-page">
 
+      {/* HEADER */}
 
-<div className="card-body p-4">
+      <div className="tutor-courses-header">
 
+        <div>
 
-<h5 className="fw-semibold mb-3">
+          <p className="tutor-courses-overline">
+            COURSE MATERIALS
+          </p>
 
-Add New Material
+          <h2>
+            Manage Study Materials
+          </h2>
 
-</h5>
+          <p>
+            Add and manage useful
+            learning resources for
+            your courses.
+          </p>
 
+        </div>
 
 
-<form onSubmit={handleSubmit}>
+        <div className="tutor-courses-header-icon">
 
+          <FileText
+            size={31}
+          />
 
-<div className="row g-3">
+        </div>
 
+      </div>
 
 
-<div className="col-md-4">
+      {/* ADD MATERIAL CARD */}
 
+      <div className="course-form-card">
 
-<select
+        <div className="course-form-heading">
 
-className="form-select form-select-lg"
+          <div className="course-form-icon">
 
-value={form.courseId}
+            <PlusCircle
+              size={21}
+            />
 
-onChange={(e)=>{
+          </div>
 
-setForm({...form,courseId:e.target.value});
-loadMaterials(e.target.value);
 
-}}
+          <div>
 
-required
+            <h4>
+              Add New Material
+            </h4>
 
->
+            <p>
+              Select a course and
+              add a study resource URL.
+            </p>
 
-<option value="">
+          </div>
 
-Select Course
+        </div>
 
-</option>
 
+        <form
+          onSubmit={
+            handleSubmit
+          }
+        >
 
-{courses.map(c=>(
+          <div className="course-form-grid">
 
-<option key={c.id} value={c.id}>
+            {/* COURSE */}
 
-{c.title}
+            <div className="course-field">
 
-</option>
+              <label>
+                Course
+              </label>
 
-))}
+              <div className="course-input-wrap">
 
+                <Layers3
+                  size={17}
+                />
 
-</select>
+                <select
+                  value={
+                    form.courseId
+                  }
 
+                  onChange={
+                    handleCourseChange
+                  }
 
-</div>
+                  required
+                >
 
+                  <option value="">
+                    Select Course
+                  </option>
 
 
-<div className="col-md-4">
+                  {courses.map(
+                    (course) => (
 
+                      <option
+                        key={
+                          course.id
+                        }
+                        value={
+                          course.id
+                        }
+                      >
+                        {
+                          course.title
+                        }
+                      </option>
 
-<input
+                    )
+                  )}
 
-className="form-control form-control-lg"
+                </select>
 
-placeholder="Material Title"
+              </div>
 
-value={form.title}
+            </div>
 
-onChange={(e)=>setForm({...form,title:e.target.value})}
 
-required
+            {/* TITLE */}
 
-/>
+            <div className="course-field">
 
+              <label>
+                Material Title
+              </label>
 
-</div>
+              <div className="course-input-wrap">
 
+                <BookOpen
+                  size={17}
+                />
 
+                <input
+                  type="text"
 
-<div className="col-md-4">
+                  placeholder="Example: Java Notes"
 
+                  value={
+                    form.title
+                  }
 
-<input
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      title:
+                        e.target.value,
+                    })
+                  }
 
-className="form-control form-control-lg"
+                  required
+                />
 
-placeholder="Material URL"
+              </div>
 
-value={form.url}
+            </div>
 
-onChange={(e)=>setForm({...form,url:e.target.value})}
 
-required
+            {/* URL */}
 
-/>
+            <div className="course-field course-field-full">
 
+              <label>
+                Material URL
+              </label>
 
-</div>
+              <div className="course-input-wrap">
 
+                <LinkIcon
+                  size={17}
+                />
 
+                <input
+                  type="url"
 
-</div>
+                  placeholder="https://example.com/material"
 
+                  value={
+                    form.url
+                  }
 
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      url:
+                        e.target.value,
+                    })
+                  }
 
-<button className="btn btn-primary btn-lg mt-4 px-5 rounded-pill">
+                  required
+                />
 
-Add Material
+              </div>
 
-</button>
+            </div>
 
+          </div>
 
-</form>
 
+          <div className="course-form-actions">
 
-</div>
+            <button
+              type="submit"
 
+              className="save-course-btn"
 
-</div>
+              disabled={
+                submitting
+              }
+            >
 
+              <PlusCircle
+                size={18}
+              />
 
+              {submitting
+                ? "Adding..."
+                : "Add Material"}
 
+            </button>
 
-{/* MATERIAL TABLE */}
+          </div>
 
+        </form>
 
-<div className="card shadow-lg border-0 rounded-4">
+      </div>
 
 
-<div className="card-body p-4">
+      {/* MATERIAL LIST */}
 
+      <div className="tutor-course-list-card">
 
-<h5 className="fw-semibold mb-3">
+        <div className="course-list-heading">
 
-Course Materials List
+          <div>
 
-</h5>
+            <p>
+              STUDY RESOURCES
+            </p>
 
+            <h4>
+              {selectedCourse
+                ? `${selectedCourse.title} Materials`
+                : "Course Materials"}
+            </h4>
 
+          </div>
 
-<div className="table-responsive">
 
+          <div className="course-total-count">
 
-<table className="table align-middle">
+            {materials.length}
 
+          </div>
 
-<thead className="table-light">
+        </div>
 
 
-<tr>
+        {loading ? (
 
-<th>Title</th>
+          <div className="course-loading">
 
-<th>Link</th>
+            <div
+              className="spinner-border"
+              role="status"
+            />
 
-</tr>
+            <span>
+              Loading materials...
+            </span>
 
+          </div>
 
-</thead>
+        ) : (
 
+          <div className="table-responsive">
 
-<tbody>
+            <table className="tutor-course-table">
 
+              <thead>
 
-{materials.length===0 &&(
+                <tr>
+                  <th>Material</th>
+                  <th>Link</th>
+                </tr>
 
-<tr>
+              </thead>
 
-<td colSpan="2" className="text-center text-muted">
 
-No Materials Found
+              <tbody>
 
-</td>
+                {materials.length ===
+                0 ? (
 
-</tr>
+                  <tr>
 
-)}
+                    <td
+                      colSpan="2"
+                      className="course-empty"
+                    >
 
+                      <FileText
+                        size={34}
+                      />
 
+                      <span>
+                        {form.courseId
+                          ? "No materials found"
+                          : "Select a course to view materials"}
+                      </span>
 
-{materials.map(m=>(
+                    </td>
 
+                  </tr>
 
-<tr key={m.id}>
+                ) : (
 
+                  materials.map(
+                    (material) => (
 
-<td className="fw-semibold">
+                      <tr
+                        key={
+                          material.id
+                        }
+                      >
 
-{m.title}
+                        {/* MATERIAL */}
 
-</td>
+                        <td>
 
+                          <div className="tutor-course-name">
 
+                            <div className="tutor-course-icon">
 
-<td>
+                              <FileText
+                                size={17}
+                              />
 
+                            </div>
 
-<a
 
-href={m.url}
+                            <div>
 
-target="_blank"
+                              <strong>
+                                {
+                                  material.title
+                                }
+                              </strong>
 
-rel="noreferrer"
+                              <small>
+                                Study Material
+                              </small>
 
-className="btn btn-outline-primary btn-sm rounded-pill"
+                            </div>
 
->
+                          </div>
 
-View Material
+                        </td>
 
-</a>
 
+                        {/* LINK */}
 
-</td>
+                        <td>
 
+                          <a
+                            href={
+                              material.url
+                            }
 
-</tr>
+                            target="_blank"
 
+                            rel="noreferrer"
 
-))}
+                            className="edit-course-btn"
 
+                            style={{
+                              textDecoration:
+                                "none",
+                            }}
+                          >
 
-</tbody>
+                            <ExternalLink
+                              size={15}
+                            />
 
+                            View Material
 
-</table>
+                          </a>
 
+                        </td>
 
-</div>
+                      </tr>
 
+                    )
+                  )
 
-</div>
+                )}
 
+              </tbody>
 
-</div>
+            </table>
 
+          </div>
 
+        )}
 
-</div>
+      </div>
 
-
-);
-
+    </div>
+  );
 }

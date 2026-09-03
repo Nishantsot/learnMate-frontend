@@ -1,89 +1,445 @@
 
 
-/*  Full-screen gradient background */
 .register-page {
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(135deg, #1a1a40, #3f51b5);
+  width: 100%;
+  min-height: 100vh;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  padding: 0; /* remove extra padding */
-  margin: 0;
+
   position: relative;
-}
+  overflow: hidden;
 
-/*  Prevent navbar overlap */
-body {
   margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+  padding: 20px;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(59, 130, 246, 0.35),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(124, 58, 237, 0.3),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #050816,
+      #111936,
+      #1e3a8a
+    );
 }
 
-/* Register Card perfectly centered */
-.register-card {
-  width: 100%;
-  max-width: 400px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 20px;
-  color: #fff;
-  transition: all 0.3s ease-in-out;
-  padding: 2rem;
-  text-align: left;
+
+/* ==============================
+   BACKGROUND GLOW
+============================== */
+
+.register-page::before,
+.register-page::after {
+  content: "";
+
+  position: absolute;
+
+  width: 320px;
+  height: 320px;
+
+  border-radius: 50%;
+
+  filter: blur(90px);
+
+  opacity: 0.45;
+
+  pointer-events: none;
+
+  animation: registerGlow 6s ease-in-out infinite alternate;
 }
 
-/*  Hover animation */
-.register-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+.register-page::before {
+  top: -100px;
+  left: -80px;
+
+  background: #2563eb;
 }
 
-/*  Gradient title */
-.text-gradient {
-  background: linear-gradient(90deg, #ffcc70, #ff8177);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.register-page::after {
+  right: -100px;
+  bottom: -100px;
+
+  background: #7c3aed;
+
+  animation-delay: 1.5s;
 }
 
-/* Inputs */
-.form-control {
-  border-radius: 10px;
-  border: none;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.85);
-}
+@keyframes registerGlow {
+  from {
+    transform: translateY(0) scale(1);
+  }
 
-.form-control:focus {
-  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.4);
-}
-
-/*  Responsive adjustments */
-@media (max-width: 768px) {
-  .register-card {
-    max-width: 90%;
-    padding: 1.5rem;
+  to {
+    transform: translateY(30px) scale(1.15);
   }
 }
-.no-navbar header,
-.no-navbar nav {
-  display: none !important;
+
+
+
+
+.register-card {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 430px;
+
+  padding: 26px !important;
+
+  border-radius: 22px !important;
+
+  color: #ffffff;
+
+  background:
+    rgba(15, 23, 42, 0.72);
+
+  border:
+    1px solid rgba(255, 255, 255, 0.14);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+
+  animation: registerCardLoad 0.7s ease forwards;
+}
+
+@keyframes registerCardLoad {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(35px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+.register-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    0 0 35px rgba(59, 130, 246, 0.12);
+}
+
+
+
+.register-card h2 {
+  margin-bottom: 20px !important;
+
+  font-weight: 800;
+
+  letter-spacing: -0.5px;
+
+  font-size: 1.8rem;
+}
+
+.text-gradient {
+  background:
+    linear-gradient(
+      90deg,
+      #60a5fa,
+      #a78bfa,
+      #67e8f9
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+
+  color: transparent;
+}
+
+
+
+
+.register-card .form-label {
+  margin-bottom: 7px;
+
+  color: #e2e8f0 !important;
+
+  font-size: 14px;
+}
+
+
+
+.register-card .form-control,
+.register-card .form-select {
+  width: 100%;
+
+  padding: 12px 14px;
+
+  border-radius: 12px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.12);
+
+  background:
+    rgba(255, 255, 255, 0.92);
+
+  color: #0f172a;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.register-card .form-control::placeholder {
+  color: #64748b;
+}
+
+.register-card .form-control:focus,
+.register-card .form-select:focus {
+  outline: none;
+
+  border-color: #60a5fa;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.16);
+
+  transform: translateY(-1px);
+}
+
+
+
+
+.register-card .mb-3 {
+  margin-bottom: 15px !important;
+}
+
+
+
+
+.password-toggle-icon {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  user-select: none;
+
+  z-index: 5;
 }
 
 .password-toggle-icon:hover {
-  opacity: 0.7;
-}
-.register-card {
-  padding: 15px 25px !important; /* Height kam ho jayegi */
-  border-radius: 15px !important;
+  opacity: 0.75;
+
+  transform: scale(1.08);
 }
 
-.register-card .mb-3 {
-  margin-bottom: 12px !important; /* Fields ke beech ka gap kam */
+
+
+.register-card .btn-light {
+  min-height: 46px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #3b82f6,
+      #4f46e5
+    );
+
+  color: #ffffff !important;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.3);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.register-card h2 {
-  margin-bottom: 15px !important; /* Heading gap kam */
+.register-card .btn-light:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 13px 32px rgba(37, 99, 235, 0.42);
+}
+
+.register-card .btn-light:disabled {
+  opacity: 0.65;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+
+
+.register-card .btn-success {
+  min-height: 46px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #16a34a,
+      #059669
+    );
+
+  font-weight: 700;
+
+  box-shadow:
+    0 8px 25px rgba(22, 163, 74, 0.25);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.register-card .btn-success:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 12px 30px rgba(22, 163, 74, 0.35);
+}
+
+
+
+
+.register-card .btn-link {
+  text-decoration: none;
+
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.register-card .btn-link:disabled {
+  opacity: 0.45;
+}
+
+
+
+
+.register-card a,
+.register-card .text-warning {
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.register-card .text-warning {
+  color: #fbbf24 !important;
+}
+
+.register-card .text-warning:hover {
+  color: #fde68a !important;
+}
+
+
+.register-card .alert {
+  border: none;
+
+  border-radius: 12px;
+
+  font-size: 14px;
+
+  padding: 11px 14px;
+
+  margin-bottom: 18px;
+}
+
+.register-card .alert-success {
+  background:
+    rgba(34, 197, 94, 0.15);
+
+  color: #bbf7d0;
+
+  border:
+    1px solid rgba(34, 197, 94, 0.25);
+}
+
+.register-card .alert-danger {
+  background:
+    rgba(239, 68, 68, 0.15);
+
+  color: #fecaca;
+
+  border:
+    1px solid rgba(239, 68, 68, 0.25);
+}
+
+
+
+
+.register-card input[inputmode="numeric"] {
+  letter-spacing: 8px;
+
+  font-size: 20px;
+
+  text-align: center;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .register-page {
+    padding: 16px;
+  }
+
+  .register-card {
+    max-width: 95%;
+
+    padding: 22px !important;
+
+    border-radius: 18px !important;
+  }
+
+  .register-card h2 {
+    font-size: 1.6rem;
+  }
+}
+
+
+
+@media (max-width: 420px) {
+  .register-card {
+    padding: 19px 16px !important;
+  }
+
+  .register-card .form-control,
+  .register-card .form-select {
+    padding: 11px 12px;
+  }
+
+  .register-card h2 {
+    font-size: 1.45rem;
+  }
 }

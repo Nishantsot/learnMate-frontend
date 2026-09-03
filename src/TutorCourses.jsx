@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+} from "react";
+
 import {
   getTutorCourses,
   CreateTutorCourse,
@@ -6,425 +10,847 @@ import {
   deleteTutorCourse,
 } from "./authService";
 
+import {
+  BookOpen,
+  PlusCircle,
+  Pencil,
+  Trash2,
+  Clock3,
+  IndianRupee,
+  Layers3,
+  Save,
+  X,
+} from "lucide-react";
+
+import "./TutorCourses.css";
+
 export default function TutorCourses() {
+  const [courses, setCourses] =
+    useState([]);
 
-  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    category: "",
-    price: "",
-    durationMinutes: ""
-  });
+  const [submitting, setSubmitting] =
+    useState(false);
 
-  const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] =
+    useState(null);
 
+  const [form, setForm] =
+    useState({
+      title: "",
+      description: "",
+      category: "",
+      price: "",
+      durationMinutes: "",
+    });
 
   useEffect(() => {
-
     loadCourses();
-
   }, []);
 
-
-
-  const loadCourses = async () => {
-
-    const data = await getTutorCourses();
-
-    setCourses(data);
-
-  };
-
-
-
-  const handleSubmit = async (e) => {
-
-    e.preventDefault();
-
-    if (editingId)
-      await UdateTutorCourse(editingId, form);
-
-    else
-      await CreateTutorCourse(form);
-
-
+  const resetForm = () => {
     setForm({
       title: "",
       description: "",
       category: "",
       price: "",
-      durationMinutes: ""
+      durationMinutes: "",
     });
 
     setEditingId(null);
-
-    loadCourses();
-
   };
 
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
 
+      const data =
+        await getTutorCourses();
+
+      setCourses(
+        data || []
+      );
+
+    } catch (error) {
+      console.error(
+        "Course load error:",
+        error
+      );
+
+      setCourses([]);
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.title.trim()) {
+      alert(
+        "Course title is required"
+      );
+      return;
+    }
+
+    if (
+      Number(form.price) < 0
+    ) {
+      alert(
+        "Price cannot be negative"
+      );
+      return;
+    }
+
+    if (
+      form.durationMinutes &&
+      Number(
+        form.durationMinutes
+      ) <= 0
+    ) {
+      alert(
+        "Duration must be greater than 0"
+      );
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const payload = {
+        title:
+          form.title.trim(),
+
+        description:
+          form.description.trim(),
+
+        category:
+          form.category.trim(),
+
+        price:
+          Number(
+            form.price
+          ),
+
+        durationMinutes:
+          form.durationMinutes
+            ? Number(
+                form.durationMinutes
+              )
+            : null,
+      };
+
+      if (editingId) {
+        await UdateTutorCourse(
+          editingId,
+          payload
+        );
+      } else {
+        await CreateTutorCourse(
+          payload
+        );
+      }
+
+      resetForm();
+
+      await loadCourses();
+
+    } catch (error) {
+      console.error(
+        "Course save error:",
+        error
+      );
+
+      alert(
+        editingId
+          ? "Failed to update course"
+          : "Failed to create course"
+      );
+
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleEdit = (course) => {
+    setEditingId(
+      course.id
+    );
 
-    setForm(course);
+    setForm({
+      title:
+        course.title || "",
 
-    setEditingId(course.id);
+      description:
+        course.description || "",
 
+      category:
+        course.category || "",
+
+      price:
+        course.price ?? "",
+
+      durationMinutes:
+        course.durationMinutes ??
+        "",
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
+  const handleDelete = async (
+    id
+  ) => {
+    const confirmDelete =
+      window.confirm(
+        "Delete this course?"
+      );
 
+    if (!confirmDelete) {
+      return;
+    }
 
-  const handleDelete = async (id) => {
+    try {
+      await deleteTutorCourse(
+        id
+      );
 
-    if (!window.confirm("Delete this course?")) return;
+      if (
+        editingId === id
+      ) {
+        resetForm();
+      }
 
-    await deleteTutorCourse(id);
+      await loadCourses();
 
-    loadCourses();
+    } catch (error) {
+      console.error(
+        "Delete course error:",
+        error
+      );
 
+      alert(
+        "Failed to delete course"
+      );
+    }
   };
 
+  const statusClass = (
+    status
+  ) => {
+    switch (
+      status?.toUpperCase()
+    ) {
+      case "APPROVED":
+        return "course-approved";
 
+      case "REJECTED":
+        return "course-rejected";
+
+      default:
+        return "course-pending";
+    }
+  };
 
   return (
+    <div className="tutor-courses-page">
 
+      {/* HEADER */}
 
-<div className="container-fluid py-4 px-4">
+      <div className="tutor-courses-header">
 
+        <div>
+          <p className="tutor-courses-overline">
+            COURSE MANAGEMENT
+          </p>
 
-{/* HEADER */}
+          <h2>
+            Manage Your Courses
+          </h2>
 
+          <p>
+            Create, edit and manage
+            your LearnMate courses.
+          </p>
+        </div>
 
-<div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="tutor-courses-header-icon">
+          <BookOpen
+            size={31}
+          />
+        </div>
 
+      </div>
 
-<h2 className="fw-bold text-white">
- Course Management
-</h2>
 
+      {/* CREATE / UPDATE */}
 
-</div>
+      <div className="course-form-card">
 
+        <div className="course-form-heading">
 
+          <div className="course-form-icon">
+            {editingId ? (
+              <Pencil
+                size={21}
+              />
+            ) : (
+              <PlusCircle
+                size={21}
+              />
+            )}
+          </div>
 
-{/* FORM CARD */}
+          <div>
+            <h4>
+              {editingId
+                ? "Update Course"
+                : "Create New Course"}
+            </h4>
 
+            <p>
+              {editingId
+                ? "Update course information and save your changes."
+                : "Enter the course details to submit a new course."}
+            </p>
+          </div>
 
+        </div>
 
-<div className="card border-0 shadow-lg rounded-4 mb-5">
 
+        <form
+          onSubmit={
+            handleSubmit
+          }
+        >
 
-<div className="card-body p-4">
+          <div className="course-form-grid">
 
+            {/* TITLE */}
 
-<h5 className="fw-semibold mb-3">
+            <div className="course-field">
 
-{editingId ? "Update Course" : "Create New Course"}
+              <label>
+                Course Title
+              </label>
 
-</h5>
+              <div className="course-input-wrap">
 
+                <BookOpen
+                  size={17}
+                />
 
-<form onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  placeholder="Enter course title"
 
+                  value={
+                    form.title
+                  }
 
-<div className="row g-3">
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      title:
+                        e.target.value,
+                    })
+                  }
 
+                  required
+                />
 
-<div className="col-md-6">
+              </div>
 
-<input
+            </div>
 
-className="form-control form-control-lg"
 
-placeholder="Course Title"
+            {/* CATEGORY */}
 
-value={form.title}
+            <div className="course-field">
 
-onChange={(e)=>setForm({...form,title:e.target.value})}
+              <label>
+                Category
+              </label>
 
-required
+              <div className="course-input-wrap">
 
-/>
+                <Layers3
+                  size={17}
+                />
 
-</div>
+                <input
+                  type="text"
+                  placeholder="Example: Programming"
 
+                  value={
+                    form.category
+                  }
 
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      category:
+                        e.target.value,
+                    })
+                  }
+                />
 
-<div className="col-md-6">
+              </div>
 
-<input
+            </div>
 
-className="form-control form-control-lg"
 
-placeholder="Category"
+            {/* DESCRIPTION */}
 
-value={form.category}
+            <div className="course-field course-field-full">
 
-onChange={(e)=>setForm({...form,category:e.target.value})}
+              <label>
+                Description
+              </label>
 
-/>
+              <textarea
+                rows="4"
+                placeholder="Enter course description"
 
-</div>
+                value={
+                  form.description
+                }
 
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    description:
+                      e.target.value,
+                  })
+                }
+              />
 
+            </div>
 
-<div className="col-md-12">
 
-<textarea
+            {/* PRICE */}
 
-className="form-control form-control-lg"
+            <div className="course-field">
 
-placeholder="Course Description"
+              <label>
+                Price
+              </label>
 
-value={form.description}
+              <div className="course-input-wrap">
 
-onChange={(e)=>setForm({...form,description:e.target.value})}
+                <IndianRupee
+                  size={17}
+                />
 
-/>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
 
-</div>
+                  placeholder="Course price"
 
+                  value={
+                    form.price
+                  }
 
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      price:
+                        e.target.value,
+                    })
+                  }
 
-<div className="col-md-6">
+                  required
+                />
 
-<input
+              </div>
 
-type="number"
+            </div>
 
-className="form-control form-control-lg"
 
-placeholder="Price ₹"
+            {/* DURATION */}
 
-value={form.price}
+            <div className="course-field">
 
-onChange={(e)=>setForm({...form,price:e.target.value})}
+              <label>
+                Duration
+              </label>
 
-required
+              <div className="course-input-wrap">
 
-/>
+                <Clock3
+                  size={17}
+                />
 
-</div>
+                <input
+                  type="number"
+                  min="1"
 
+                  placeholder="Duration in minutes"
 
+                  value={
+                    form.durationMinutes
+                  }
 
-<div className="col-md-6">
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      durationMinutes:
+                        e.target.value,
+                    })
+                  }
+                />
 
-<input
+              </div>
 
-type="number"
+            </div>
 
-className="form-control form-control-lg"
+          </div>
 
-placeholder="Duration (Minutes)"
 
-value={form.durationMinutes}
+          {/* BUTTONS */}
 
-onChange={(e)=>setForm({...form,durationMinutes:e.target.value})}
+          <div className="course-form-actions">
 
-/>
+            <button
+              type="submit"
+              className="save-course-btn"
+              disabled={
+                submitting
+              }
+            >
 
-</div>
+              {editingId ? (
+                <Save
+                  size={18}
+                />
+              ) : (
+                <PlusCircle
+                  size={18}
+                />
+              )}
 
+              {submitting
+                ? "Saving..."
+                : editingId
+                ? "Update Course"
+                : "Create Course"}
 
-</div>
+            </button>
 
 
+            {editingId && (
 
-<button className="btn btn-primary btn-lg mt-4 px-5 rounded-pill">
+              <button
+                type="button"
+                className="cancel-edit-btn"
 
-{editingId ? "Update Course" : "Create Course"}
+                onClick={
+                  resetForm
+                }
+              >
 
-</button>
+                <X size={18} />
 
+                Cancel
 
-</form>
+              </button>
 
+            )}
 
-</div>
+          </div>
 
+        </form>
 
-</div>
+      </div>
 
 
+      {/* COURSE LIST */}
 
-{/* COURSE TABLE */}
+      <div className="tutor-course-list-card">
 
+        <div className="course-list-heading">
 
+          <div>
 
-<div className="card border-0 shadow-lg rounded-4">
+            <p>
+              YOUR COURSES
+            </p>
 
+            <h4>
+              Course List
+            </h4>
 
-<div className="card-body p-4">
+          </div>
 
+          <div className="course-total-count">
+            {courses.length}
+          </div>
 
-<h5 className="fw-semibold mb-3">
+        </div>
 
-Your Courses
 
-</h5>
+        {loading ? (
 
+          <div className="course-loading">
 
+            <div
+              className="spinner-border"
+              role="status"
+            />
 
-<div className="table-responsive">
+            <span>
+              Loading courses...
+            </span>
 
+          </div>
 
-<table className="table align-middle">
+        ) : (
 
+          <div className="table-responsive">
 
-<thead className="table-light">
+            <table className="tutor-course-table">
 
+              <thead>
 
-<tr>
+                <tr>
+                  <th>Course</th>
+                  <th>Category</th>
+                  <th>Duration</th>
+                  <th>Status</th>
+                  <th>Price</th>
+                  <th>Action</th>
+                </tr>
 
-<th>Course</th>
+              </thead>
 
-<th>Status</th>
 
-<th>Price</th>
+              <tbody>
 
-<th width="180">Action</th>
+                {courses.length ===
+                0 ? (
 
-</tr>
+                  <tr>
 
+                    <td
+                      colSpan="6"
+                      className="course-empty"
+                    >
 
-</thead>
+                      <BookOpen
+                        size={34}
+                      />
 
+                      <span>
+                        No courses found
+                      </span>
 
+                    </td>
 
-<tbody>
+                  </tr>
 
+                ) : (
 
-{courses.length === 0 && (
+                  courses.map(
+                    (course) => (
 
-<tr>
+                      <tr
+                        key={
+                          course.id
+                        }
+                      >
 
-<td colSpan="4" className="text-center text-muted">
+                        {/* COURSE */}
 
-No Courses Found
+                        <td>
 
-</td>
+                          <div className="tutor-course-name">
 
-</tr>
+                            <div className="tutor-course-icon">
 
-)}
+                              <BookOpen
+                                size={17}
+                              />
 
+                            </div>
 
+                            <div>
 
-{courses.map((c)=> (
+                              <strong>
+                                {
+                                  course.title
+                                }
+                              </strong>
 
+                              <small>
+                                {course.description
+                                  ? course.description
+                                      .length >
+                                    55
+                                    ? `${course.description.slice(
+                                        0,
+                                        55
+                                      )}...`
+                                    : course.description
+                                  : "No description"}
+                              </small>
 
-<tr key={c.id}>
+                            </div>
 
+                          </div>
 
-<td>
+                        </td>
 
-<div className="fw-semibold">
 
-{c.title}
+                        {/* CATEGORY */}
 
-</div>
+                        <td>
 
-<div className="text-muted small">
+                          <span className="course-category-badge">
 
-{c.category}
+                            {
+                              course.category ||
+                              "General"
+                            }
 
-</div>
+                          </span>
 
-</td>
+                        </td>
 
 
+                        {/* DURATION */}
 
-<td>
+                        <td>
 
-<span className={`badge px-3 py-2 rounded-pill
+                          <span className="course-duration">
 
-${c.status==="APPROVED" ?
+                            <Clock3
+                              size={14}
+                            />
 
-"bg-success-subtle text-success"
+                            {
+                              course.durationMinutes ||
+                              0
+                            }{" "}
+                            min
 
-:
+                          </span>
 
-"bg-warning-subtle text-warning"
+                        </td>
 
-}`}>
 
-{c.status}
+                        {/* STATUS */}
 
-</span>
+                        <td>
 
-</td>
+                          <span
+                            className={`tutor-course-status ${statusClass(
+                              course.status
+                            )}`}
+                          >
 
+                            {
+                              course.status ||
+                              "PENDING"
+                            }
 
+                          </span>
 
-<td className="fw-semibold">
+                        </td>
 
-₹{c.price}
 
-</td>
+                        {/* PRICE */}
 
+                        <td>
 
+                          <strong className="course-price">
 
-<td>
+                            ₹
+                            {Number(
+                              course.price ||
+                              0
+                            ).toLocaleString(
+                              "en-IN"
+                            )}
 
+                          </strong>
 
-<button
+                        </td>
 
-className="btn btn-outline-primary btn-sm me-2 rounded-pill"
 
-onClick={()=>handleEdit(c)}
+                        {/* ACTION */}
 
->
+                        <td>
 
-Edit
+                          <div className="tutor-course-actions">
 
-</button>
+                            <button
+                              type="button"
+                              className="edit-course-btn"
 
+                              onClick={() =>
+                                handleEdit(
+                                  course
+                                )
+                              }
+                            >
 
+                              <Pencil
+                                size={15}
+                              />
 
-<button
+                              Edit
 
-className="btn btn-outline-danger btn-sm rounded-pill"
+                            </button>
 
-onClick={()=>handleDelete(c.id)}
 
->
+                            <button
+                              type="button"
+                              className="delete-course-btn"
 
-Delete
+                              onClick={() =>
+                                handleDelete(
+                                  course.id
+                                )
+                              }
+                            >
 
-</button>
+                              <Trash2
+                                size={15}
+                              />
 
+                              Delete
 
-</td>
+                            </button>
 
+                          </div>
 
-</tr>
+                        </td>
 
+                      </tr>
 
-))}
+                    )
+                  )
 
+                )}
 
-</tbody>
+              </tbody>
 
+            </table>
 
-</table>
+          </div>
 
+        )}
 
-</div>
+      </div>
 
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-);
-
+    </div>
+  );
 }

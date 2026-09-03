@@ -28,13 +28,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
 
   // Hide Navbar on Login Page
-  useEffect(() => {
-    document.body.classList.add("no-navbar");
 
-    return () => {
-      document.body.classList.remove("no-navbar");
-    };
-  }, []);
 
   // Decode JWT payload safely
   const decodeToken = (token) => {
@@ -291,9 +285,7 @@ const Login = () => {
           </>
         );
 
-      // =====================
-      // RESET PASSWORD
-      // =====================
+      
       case "reset":
         return (
           <>
@@ -416,9 +408,7 @@ const Login = () => {
           </>
         );
 
-      // =====================
-      // LOGIN
-      // =====================
+   
       default:
         return (
           <>

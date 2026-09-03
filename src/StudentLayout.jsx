@@ -1,22 +1,18 @@
-import StudentSidebar from "./StudentSidebar";
 import { Outlet } from "react-router-dom";
+import StudentSidebar from "./StudentSidebar";
 
-export default function StudentLayout(){
+import "./StudentDashboard.css";
 
-return(
+export default function StudentLayout() {
+  return (
+    <div className="student-layout">
 
-<div className="d-flex">
+      <StudentSidebar />
 
-<StudentSidebar/>
+      <main className="student-main-content">
+        <Outlet />
+      </main>
 
-<div className="flex-grow-1 p-4 bg-light min-vh-100">
-
-<Outlet />
-
-</div>
-
-</div>
-
-);
-
+    </div>
+  );
 }

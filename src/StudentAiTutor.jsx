@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+
+import {
+  Bot,
+  Trash2,
+  Send,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
+
 import { askAiTutor } from "./authService";
+
+import "./StudentDashboard.css";
 import "./StudentAiTutor.css";
 
 export default function StudentAiTutor() {
@@ -9,7 +20,8 @@ export default function StudentAiTutor() {
   const [messages, setMessages] = useState([
     {
       role: "ai",
-      text: "Hi! 👋 I'm LearnMate AI Tutor. What would you like to learn today?",
+      text:
+        "Hi! 👋 I'm LearnMate AI Tutor. What would you like to learn today?",
     },
   ]);
 
@@ -40,7 +52,8 @@ export default function StudentAiTutor() {
     setLoading(true);
 
     try {
-      const response = await askAiTutor(question);
+      const response =
+        await askAiTutor(question);
 
       setMessages((prev) => [
         ...prev,
@@ -52,13 +65,17 @@ export default function StudentAiTutor() {
         },
       ]);
     } catch (error) {
-      console.error(error);
+      console.error(
+        "AI Tutor error:",
+        error
+      );
 
       setMessages((prev) => [
         ...prev,
         {
           role: "error",
           text:
+            error?.response?.data?.message ||
             error?.message ||
             "AI Tutor is currently unavailable.",
         },
@@ -68,12 +85,15 @@ export default function StudentAiTutor() {
     }
   };
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (
+    event
+  ) => {
     if (
       event.key === "Enter" &&
       !event.shiftKey
     ) {
       event.preventDefault();
+
       sendMessage();
     }
   };
@@ -82,107 +102,175 @@ export default function StudentAiTutor() {
     setMessages([
       {
         role: "ai",
-        text: "Chat cleared. What would you like to learn?",
+        text:
+          "Chat cleared. What would you like to learn?",
       },
     ]);
+
+    setInput("");
   };
 
   return (
-    <div className="content-area ai-page">
+    <div className="student-dashboard-page">
 
       {/* HEADER */}
 
-      <div className="ai-header">
-        <div>
-          <h2 className="fw-bold mb-1">
-            🤖 LearnMate AI Tutor
-          </h2>
+      <div className="student-dashboard-header">
 
-          <p className="text-muted mb-0">
-            Your personal AI learning assistant
+        <div>
+
+          <div className="student-dashboard-label">
+
+            <Sparkles size={15} />
+
+            AI LEARNING ASSISTANT
+
+          </div>
+
+          <h1>
+            LearnMate AI Tutor
+          </h1>
+
+          <p>
+            Ask questions about programming,
+            science, mathematics, AI, general
+            knowledge and other learning topics.
           </p>
+
         </div>
 
         <button
-          className="btn btn-outline-danger"
+          type="button"
+          className="ai-clear-btn"
           onClick={clearChat}
         >
+          <Trash2 size={17} />
+
           Clear Chat
         </button>
+
       </div>
 
-      {/* CHAT CARD */}
+
+      {/* CHAT */}
 
       <div className="ai-chat-card">
+
+        {/* TOP BAR */}
+
+        <div className="ai-chat-top">
+
+          <div className="ai-chat-bot">
+
+            <div className="ai-chat-bot-icon">
+              <Bot size={22} />
+            </div>
+
+            <div>
+
+              <h4>
+                LearnMate AI
+              </h4>
+
+              <span>
+                AI Tutor • Online
+              </span>
+
+            </div>
+
+          </div>
+
+          <div className="ai-online-indicator">
+            <span />
+            Online
+          </div>
+
+        </div>
+
 
         {/* MESSAGES */}
 
         <div className="ai-messages">
 
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={
-                message.role === "user"
-                  ? "message-row user-row"
-                  : "message-row ai-row"
-              }
-            >
-
-              {message.role !== "user" && (
-                <div className="ai-avatar">
-                  🤖
-                </div>
-              )}
+          {messages.map(
+            (message, index) => (
 
               <div
-                className={`message-bubble ${
-                  message.role === "user"
-                    ? "user-message"
-                    : message.role === "error"
-                    ? "error-message"
-                    : "ai-message"
-                }`}
+                key={index}
+                className={
+                  message.role ===
+                  "user"
+                    ? "message-row user-row"
+                    : "message-row ai-row"
+                }
               >
-                {message.text}
+
+                {message.role !==
+                  "user" && (
+
+                  <div className="ai-avatar">
+                    <Bot size={18} />
+                  </div>
+
+                )}
+
+                <div
+                  className={`message-bubble ${
+                    message.role ===
+                    "user"
+                      ? "user-message"
+                      : message.role ===
+                        "error"
+                      ? "error-message"
+                      : "ai-message"
+                  }`}
+                >
+                  {message.text}
+                </div>
+
+                {message.role ===
+                  "user" && (
+
+                  <div className="user-avatar">
+                    <UserRound
+                      size={18}
+                    />
+                  </div>
+
+                )}
+
               </div>
 
-              {message.role === "user" && (
-                <div className="user-avatar">
-                  👤
-                </div>
-              )}
+            )
+          )}
 
-            </div>
-          ))}
 
           {/* THINKING */}
 
           {loading && (
+
             <div className="message-row ai-row">
 
               <div className="ai-avatar">
-                🤖
+                <Bot size={18} />
               </div>
 
-              <div className="message-bubble ai-message">
-                <span className="thinking-dot">
-                  .
-                </span>
-                <span className="thinking-dot">
-                  .
-                </span>
-                <span className="thinking-dot">
-                  .
-                </span>
+              <div className="message-bubble ai-message ai-thinking">
+
+                <span />
+                <span />
+                <span />
+
               </div>
 
             </div>
+
           )}
 
           <div ref={bottomRef} />
 
         </div>
+
 
         {/* INPUT */}
 
@@ -191,31 +279,49 @@ export default function StudentAiTutor() {
           <textarea
             value={input}
             onChange={(e) =>
-              setInput(e.target.value)
+              setInput(
+                e.target.value
+              )
             }
-            onKeyDown={handleKeyDown}
-            placeholder="Ask anything about Java, React, Spring Boot, Python..."
+            onKeyDown={
+              handleKeyDown
+            }
+            placeholder="Ask anything you want to learn..."
             rows="2"
             disabled={loading}
           />
 
           <button
-            onClick={sendMessage}
+            type="button"
+            onClick={
+              sendMessage
+            }
             disabled={
-              loading || !input.trim()
+              loading ||
+              !input.trim()
             }
           >
-            {loading ? "Thinking..." : "Send ➤"}
+
+            <Send size={18} />
+
+            {loading
+              ? "Thinking..."
+              : "Send"}
+
           </button>
 
         </div>
 
+
         <div className="ai-hint">
-          Press Enter to send • Shift + Enter for
-          new line
+
+          Press Enter to send •
+          Shift + Enter for new line
+
         </div>
 
       </div>
+
     </div>
   );
 }

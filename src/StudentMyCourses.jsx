@@ -1,75 +1,270 @@
 import { useEffect, useState } from "react";
 import { fetchMyCourses } from "./authService";
+import {
+  BookOpen,
+  GraduationCap,
+  RefreshCw,
+} from "lucide-react";
 
 export default function StudentMyCourses() {
 
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
 
+
   const load = async () => {
+
     try {
+
+      setLoading(true);
+
       const res = await fetchMyCourses();
-      console.log("My Courses:", res);   // debug
+
+      console.log("My Courses:", res);
+
       setCourses(res || []);
+
     } catch (err) {
-      console.error("Error loading courses:", err);
+
+      console.error(
+        "Error loading courses:",
+        err
+      );
+
+      setCourses([]);
+
+    } finally {
+
+      setLoading(false);
+
     }
+
   };
+
 
   return (
 
-<div className="content-area">
+    <div className="student-dashboard-page">
 
-<h3 className="mb-4">My Courses</h3>
 
-{courses.length === 0 ? (
+      
 
-<p>No enrolled courses yet.</p>
+      <div className="student-dashboard-header">
 
-) : (
+        <div>
 
-<div className="row g-3">
+          <div className="student-dashboard-label">
 
-{courses.map((c)=>{
+            <GraduationCap size={15} />
 
-const course = c.course || {};
+            STUDENT LEARNING
 
-return(
+          </div>
 
-<div className="col-xl-3 col-lg-4 col-md-6 col-sm-12" key={c.id}>
 
-<div className="card shadow-sm h-100">
+          <h1>
+            My Courses
+          </h1>
 
-<div className="card-body">
 
-<h5 className="card-title">
-{course.title || "Course"}
-</h5>
+          <p>
+            View and continue your enrolled courses.
+          </p>
 
-<p className="text-muted">
-{course.description || "No description"}
-</p>
+        </div>
 
-</div>
 
-</div>
+        <button
+          className="student-refresh-btn"
+          onClick={load}
+          disabled={loading}
+        >
 
-</div>
+          <RefreshCw
+            size={17}
+            className={
+              loading
+                ? "student-spin"
+                : ""
+            }
+          />
 
-);
+          {loading
+            ? "Loading..."
+            : "Refresh"
+          }
 
-})}
+        </button>
 
-</div>
+      </div>
 
-)}
 
-</div>
+      {/* =========================
+          EMPTY STATE
+      ========================= */}
 
-);
+      {!loading && courses.length === 0 && (
 
+        <div className="student-overview-card">
+
+          <div className="student-overview-icon">
+
+            <BookOpen size={23} />
+
+          </div>
+
+          <div>
+
+            <h4>
+              No enrolled courses
+            </h4>
+
+            <p>
+              You haven't enrolled in any
+              courses yet.
+            </p>
+
+          </div>
+
+        </div>
+
+      )}
+
+
+   
+
+      {courses.length > 0 && (
+
+        <div className="student-stats-grid">
+
+          {courses.map((item, index) => {
+
+            const course =
+              item.course || {};
+
+            return (
+
+              <div
+                className={`
+                  student-stat-card
+                  student-course-card
+                  ${
+                    index % 3 === 0
+                      ? "student-stat-blue"
+                      : index % 3 === 1
+                      ? "student-stat-purple"
+                      : "student-stat-green"
+                  }
+                `}
+                key={item.id}
+                style={{
+                  animationDelay:
+                    `${index * 80}ms`,
+                }}
+              >
+
+                {/* ICON */}
+
+                <div className="student-stat-icon">
+
+                  <BookOpen size={24} />
+
+                </div>
+
+
+                {/* COURSE INFO */}
+
+                <div className="student-stat-content">
+
+                  <span>
+                    Enrolled Course
+                  </span>
+
+                  <h2 className="student-course-title">
+
+                    {course.title ||
+                      "Course"}
+
+                  </h2>
+
+                  <p className="student-course-description">
+
+                    {course.description ||
+                      "No description available."}
+
+                  </p>
+
+
+                  {/* CATEGORY */}
+
+                  {course.category && (
+
+                    <span className="student-course-category">
+
+                      {course.category}
+
+                    </span>
+
+                  )}
+
+                </div>
+
+              </div>
+
+            );
+
+          })}
+
+        </div>
+
+      )}
+
+
+     
+      {courses.length > 0 && (
+
+        <div className="student-overview-card">
+
+          <div className="student-overview-icon">
+
+            <GraduationCap size={24} />
+
+          </div>
+
+
+          <div>
+
+            <h4>
+              Learning Overview
+            </h4>
+
+            <p>
+
+              You are currently enrolled in{" "}
+
+              <strong>
+                {courses.length}
+              </strong>{" "}
+
+              course
+              {courses.length !== 1
+                ? "s"
+                : ""}.
+
+            </p>
+
+          </div>
+
+        </div>
+
+      )}
+
+    </div>
+
+  );
 
 }

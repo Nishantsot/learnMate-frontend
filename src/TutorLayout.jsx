@@ -1,229 +1,265 @@
 import React, { useState } from "react";
 
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+} from "react-router-dom";
 
 import {
-
-LayoutDashboard,
-BookOpen,
-Video,
-FileText,
-LogOut,
-Menu,
-X
-
+  LayoutDashboard,
+  BookOpen,
+  Video,
+  FileText,
+  LogOut,
+  Menu,
+  X,
+  GraduationCap,
 } from "lucide-react";
 
+import "./AdminDashboard.css";
 
-export default function TutorLayout(){
 
-const navigate = useNavigate();
+export default function TutorLayout() {
+  const navigate = useNavigate();
 
-const [showSidebar,setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] =
+    useState(false);
 
 
-const logout = ()=>{
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("userName");
 
-localStorage.removeItem("token");
+    setShowSidebar(false);
 
-navigate("/login");
+    navigate("/login");
+  };
 
-};
 
+  return (
+    <div className="admin-layout">
 
-return(
 
-<div className="admin-layout">
+      <div className="mobile-header d-md-none">
 
+        <div className="mobile-admin-brand">
 
-{/* MOBILE HEADER */}
+          <div className="mobile-admin-icon">
+            <GraduationCap size={20} />
+          </div>
 
+          <span>
+            LearnMate Tutor
+          </span>
 
-<div className="mobile-header d-md-none">
+        </div>
 
 
-<h5>Tutor Panel</h5>
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          onClick={() =>
+            setShowSidebar(true)
+          }
+        >
+          <Menu size={24} />
+        </button>
 
+      </div>
 
-<Menu
 
-className="burger-icon"
+ 
 
-onClick={()=>setShowSidebar(true)}
+      <aside
+        className={`admin-sidebar ${
+          showSidebar ? "open" : ""
+        }`}
+      >
 
-/>
+        {/* MOBILE CLOSE */}
 
+        <div className="admin-sidebar-mobile-top d-md-none">
 
-</div>
+          <span>
+            Tutor Menu
+          </span>
 
+          <button
+            type="button"
+            className="sidebar-close-btn"
+            onClick={() =>
+              setShowSidebar(false)
+            }
+          >
+            <X size={22} />
+          </button>
 
+        </div>
 
-{/* SIDEBAR */}
 
+        {/* BRAND */}
 
-<div className={`admin-sidebar ${showSidebar ? "open" : ""}`}>
+        <div className="admin-sidebar-brand">
 
+          <div className="admin-brand-icon">
 
+            <GraduationCap size={25} />
 
-{/* CLOSE MOBILE */}
+          </div>
 
 
-<div className="d-md-none text-end mb-3">
+          <div>
 
-<X
+            <h4>
+              LearnMate
+            </h4>
 
-className="close-icon"
+            <span>
+              Tutor Panel
+            </span>
 
-onClick={()=>setShowSidebar(false)}
+          </div>
 
-/>
+        </div>
 
-</div>
 
+     
 
+        <nav className="admin-sidebar-nav">
 
-<h4 className="text-info mb-4">
+          <SidebarLink
+            to="/tutor"
+            end
+            icon={
+              <LayoutDashboard size={19} />
+            }
+            text="Dashboard"
+            closeSidebar={() =>
+              setShowSidebar(false)
+            }
+          />
 
-Tutor Panel
 
-</h4>
+          <SidebarLink
+            to="/tutor/courses"
+            icon={
+              <BookOpen size={19} />
+            }
+            text="Courses"
+            closeSidebar={() =>
+              setShowSidebar(false)
+            }
+          />
 
 
+          <SidebarLink
+            to="/tutor/classes"
+            icon={
+              <Video size={19} />
+            }
+            text="Live Classes"
+            closeSidebar={() =>
+              setShowSidebar(false)
+            }
+          />
 
-<SidebarLink
 
-to="/tutor"
+          <SidebarLink
+            to="/tutor/materials"
+            icon={
+              <FileText size={19} />
+            }
+            text="Materials"
+            closeSidebar={() =>
+              setShowSidebar(false)
+            }
+          />
 
-icon={<LayoutDashboard size={18}/>}
+        </nav>
 
-text="Dashboard"
 
-closeSidebar={()=>setShowSidebar(false)}
+   
 
-/>
+        <div className="admin-sidebar-bottom">
 
+          <button
+            type="button"
+            className="sidebar-logout-btn"
+            onClick={logout}
+          >
 
+            <LogOut size={18} />
 
-<SidebarLink
+            <span>
+              Logout
+            </span>
 
-to="/tutor/courses"
+          </button>
 
-icon={<BookOpen size={18}/>}
+        </div>
 
-text="Courses"
+      </aside>
 
-closeSidebar={()=>setShowSidebar(false)}
 
-/>
+      
 
+      {showSidebar && (
 
+        <div
+          className="sidebar-overlay"
+          onClick={() =>
+            setShowSidebar(false)
+          }
+        />
 
-<SidebarLink
+      )}
 
-to="/tutor/classes"
 
-icon={<Video size={18}/>}
+  
+      <main className="admin-content">
 
-text="Live Classes"
+        <Outlet />
 
-closeSidebar={()=>setShowSidebar(false)}
+      </main>
 
-/>
-
-
-
-<SidebarLink
-
-to="/tutor/materials"
-
-icon={<FileText size={18}/>}
-
-text="Materials"
-
-closeSidebar={()=>setShowSidebar(false)}
-
-/>
-
-
-
-<button
-
-onClick={logout}
-
-className="btn btn-danger w-100 mt-auto"
-
->
-
-<LogOut size={18}/> Logout
-
-</button>
-
-
-</div>
-
-
-
-{/* OVERLAY */}
-
-
-{showSidebar && (
-
-<div
-
-className="sidebar-overlay"
-
-onClick={()=>setShowSidebar(false)}
-
-/>
-
-)}
-
-
-
-{/* CONTENT */}
-
-
-<div className="admin-content">
-
-<Outlet/>
-
-</div>
-
-
-</div>
-
-);
-
+    </div>
+  );
 }
 
 
 
-function SidebarLink({to,icon,text,closeSidebar}){
 
-return(
+function SidebarLink({
+  to,
+  icon,
+  text,
+  closeSidebar,
+  end = false,
+}) {
+  return (
 
-<NavLink
+    <NavLink
+      to={to}
+      end={end}
+      onClick={closeSidebar}
+      className={({ isActive }) =>
+        `sidebar-link-premium ${
+          isActive ? "active" : ""
+        }`
+      }
+    >
 
-to={to}
+      <div className="sidebar-menu-icon">
+        {icon}
+      </div>
 
-onClick={closeSidebar}
+      <span>
+        {text}
+      </span>
 
-className={({isActive})=>
+    </NavLink>
 
-`sidebar-link-premium d-flex align-items-center gap-2
-
-${isActive ? "active" : ""}`
-
-}
-
->
-
-{icon}
-
-{text}
-
-</NavLink>
-
-);
-
+  );
 }
