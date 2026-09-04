@@ -16,14 +16,9 @@ import {
 export default function StudentClasses() {
   const navigate = useNavigate();
 
-  const [classes, setClasses] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     load();
@@ -34,8 +29,7 @@ export default function StudentClasses() {
       setLoading(true);
       setError("");
 
-      const res =
-        await fetchMyClasses();
+      const res = await fetchMyClasses();
 
       console.log(
         "Student Classes:",
@@ -66,15 +60,12 @@ export default function StudentClasses() {
   };
 
 
-  const formatDate = (
-    value
-  ) => {
+  const formatDate = (value) => {
     if (!value) {
       return "Not scheduled";
     }
 
-    const date =
-      new Date(value);
+    const date = new Date(value);
 
     if (
       Number.isNaN(
@@ -88,9 +79,7 @@ export default function StudentClasses() {
   };
 
 
-  const statusClass = (
-    status
-  ) => {
+  const statusClass = (status) => {
     switch (
       status?.toUpperCase()
     ) {
@@ -106,23 +95,20 @@ export default function StudentClasses() {
   };
 
 
-  const joinClass = (
-    classItem
-  ) => {
-    if (!classItem.roomId) {
+  const joinClass = (classItem) => {
+    if (!classItem?.roomId) {
+      alert("Room is not available.");
       return;
     }
 
     navigate(
-      `/student/live/${classItem.roomId}`
+      `/live/${classItem.roomId}`
     );
   };
 
 
   return (
     <div className="student-dashboard-page">
-
-      {/* HEADER */}
 
       <div className="student-dashboard-header">
 
@@ -141,9 +127,8 @@ export default function StudentClasses() {
           </h1>
 
           <p>
-            View your scheduled
-            sessions and join live
-            classes.
+            View your scheduled sessions
+            and join live classes.
           </p>
 
         </div>
@@ -174,20 +159,12 @@ export default function StudentClasses() {
       </div>
 
 
-      {/* ERROR */}
-
       {error && (
-
         <div className="alert alert-danger">
-
           {error}
-
         </div>
-
       )}
 
-
-      {/* LOADING */}
 
       {loading ? (
 
@@ -225,8 +202,7 @@ export default function StudentClasses() {
             <p>
               There are currently no
               upcoming live classes
-              for your enrolled
-              courses.
+              for your enrolled courses.
             </p>
 
           </div>
@@ -265,8 +241,6 @@ export default function StudentClasses() {
                 }}
               >
 
-                {/* TOP */}
-
                 <div className="student-class-top">
 
                   <div className="student-stat-icon">
@@ -288,8 +262,6 @@ export default function StudentClasses() {
 
                 </div>
 
-
-                {/* COURSE */}
 
                 <div className="student-class-content">
 
@@ -356,11 +328,11 @@ export default function StudentClasses() {
                 </div>
 
 
-                {/* JOIN */}
-
                 <div className="student-class-footer">
 
-                  {classItem.roomId ? (
+                  {classItem.status ===
+                    "LIVE" &&
+                  classItem.roomId ? (
 
                     <button
                       type="button"
@@ -371,11 +343,24 @@ export default function StudentClasses() {
                         )
                       }
                     >
+
                       <Video
                         size={16}
                       />
 
                       Join Class
+
+                    </button>
+
+                  ) : classItem.status ===
+                    "SCHEDULED" ? (
+
+                    <button
+                      type="button"
+                      className="student-disabled-btn"
+                      disabled
+                    >
+                      Class Not Started
                     </button>
 
                   ) : (
@@ -385,7 +370,7 @@ export default function StudentClasses() {
                       className="student-disabled-btn"
                       disabled
                     >
-                      Room Not Available
+                      Class Unavailable
                     </button>
 
                   )}

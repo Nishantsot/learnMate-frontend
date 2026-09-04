@@ -25,7 +25,7 @@ import StudentCourses from "./StudentCourses";
 import StudentMyCourses from "./StudentMyCourses";
 import StudentClasses from "./StudentClasses";
 import StudentAiTutor from "./StudentAiTutor";
-
+import StudentMaterials from "./StudentMaterials";
 // Tutor
 import TutorLayout from "./TutorLayout";
 import TutorDashboard from "./TutorDashboard";
@@ -110,7 +110,10 @@ function LayoutWrapper() {
             path="classes"
             element={<StudentClasses />}
           />
-
+<Route
+  path="materials"
+  element={<StudentMaterials />}
+/>
           <Route
             path="ai-tutor"
             element={<StudentAiTutor />}

@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+    FileText,
   UserRound,
 } from "lucide-react";
 
@@ -208,7 +209,14 @@ export default function StudentSidebar() {
               )
             }
           />
-
+<SidebarLink
+  to="/student/materials"
+  text="Materials"
+  icon={<FileText size={19} />}
+  close={() =>
+    setShowSidebar(false)
+  }
+/>
 
           <SidebarLink
             to="/student/classes"
