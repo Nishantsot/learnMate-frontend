@@ -139,8 +139,8 @@ export default function TutorClasses() {
       await loadData();
 
       navigate(
-        `/tutor/live/${session.roomId}`
-      );
+  `/live/${session.roomId}`
+);
     } catch (err) {
       console.error(
         "Start class error:",
@@ -574,9 +574,9 @@ export default function TutorClasses() {
                               <button
                                 className="session-join-btn"
                                 onClick={() =>
-                                  navigate(
-                                    `/tutor/live/${session.roomId}`
-                                  )
+                                 navigate(
+  `/live/${session.roomId}`
+)
                                 }
                               >
                                 <Video
